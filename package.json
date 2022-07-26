@@ -5,6 +5,7 @@
   "scripts": {
     "compile": "yarn hardhat compile",
     "test:union-v1-sdk": "yarn hardhat test ./test/union-v1-sdk/*.js",
+    "test:SocialImpactVouch": "yarn hardhat test ./test/SocialImpactVouch.test.js",
     "test": "yarn hardhat test ./test/*.js"
   },
   "repository": {

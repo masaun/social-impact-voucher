@@ -11,6 +11,13 @@ yarn compile
 <br>
 
 ## Test
+- Unit Test of SocialImpactVouch.sol
+```
+yarn test:SocialImpactVouch
+```
+
+<br>
+
 - Unit Test of union-v1-sdk
 ```
 yarn test:union-v1-sdk
