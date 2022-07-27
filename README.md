@@ -1,4 +1,4 @@
-# Social Impact Vouch🎫 built on Union Finance
+# Social Impact Voucher🎫 built on Union Finance
 
 ## Installation
 ```
@@ -11,9 +11,16 @@ yarn compile
 <br>
 
 ## Test
-- Unit Test of SocialImpactVouch.sol
+- Unit Test of SocialImpactVoucher.sol
 ```
-yarn test-unit:SocialImpactVouch
+yarn test-unit:SocialImpactVoucher
+```
+
+<br>
+
+- Unit Test of SocialImpactVoucherFactory.sol
+```
+yarn test-unit:SocialImpactVoucherFactory
 ```
 
 <br>

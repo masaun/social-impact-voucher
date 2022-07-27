@@ -11,9 +11,9 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 
 
 /**
- * @title - Social Impact Vouch contract
+ * @title - Social Impact Voucher contract
  */ 
-contract SocialImpactVouch is AccessControl, Ownable, UnionVoucher, UnionBorrower {
+contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorrower {
 
     //@dev - Roles
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");

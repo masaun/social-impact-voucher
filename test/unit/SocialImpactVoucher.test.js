@@ -3,7 +3,7 @@ const { parseEther } = ethers.utils;
 require("chai").should();
 
 
-describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
+describe("SocialImpactVoucher.sol - Use Voucher and Borrower", async () => {
   
   let voucherContract, borrowerContract, userManager, dai, unionToken, uToken;
 
@@ -214,7 +214,7 @@ describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
   });
 });
 
-describe("SocialImpactVouch.sol - Use Member", async () => {
+describe("SocialImpactVoucher.sol - Use Member", async () => {
   let contract, userManager, dai, unionToken, uToken;
   before(async () => {
     await network.provider.request({
