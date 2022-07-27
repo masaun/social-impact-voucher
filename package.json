@@ -5,8 +5,8 @@
   "scripts": {
     "compile": "yarn hardhat compile",
     "test-unit:union-v1-sdk": "yarn hardhat test ./test/union-v1-sdk/*.js",
-    "test-unit:SocialImpactVouch": "yarn hardhat test ./test/unit/SocialImpactVouch.test.js",
-    "test-unit:SocialImpactVouchFactory": "yarn hardhat test ./test/unit/SocialImpactVouchFactory.test.js",
+    "test-unit:SocialImpactVoucher": "yarn hardhat test ./test/unit/SocialImpactVoucher.test.js",
+    "test-unit:SocialImpactVoucherFactory": "yarn hardhat test ./test/unit/SocialImpactVoucherFactory.test.js",
     "test": "yarn hardhat test ./test/*.js"
   },
   "repository": {

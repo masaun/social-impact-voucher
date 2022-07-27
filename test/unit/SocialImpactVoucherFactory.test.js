@@ -6,10 +6,10 @@ require("chai").should();
 /**
  * @title - SocialImpactVouchFactory contract
  */ 
-describe("SocialImpactVouchFactory.sol", async () => {
+describe("SocialImpactVoucherFactory.sol", async () => {
   
     //@dev - Smart contract instances
-    let socialImpactVouchFactory, userManager, dai, unionToken, uToken;
+    let socialImpactVoucherFactory, userManager, dai, unionToken, uToken;
 
     //@dev - Smart contract addresses
     let MARKET_REGISTRY    // MarketRegistry.sol
@@ -44,16 +44,17 @@ describe("SocialImpactVouchFactory.sol", async () => {
         UNION_TOKEN = "0x5Dfe42eEA70a3e6f93EE54eD9C321aF07A85535C"       // UnionToken.sol
         UNDERLYING_TOKEN = "0x6b175474e89094c44da98b954eedeac495271d0f"  // Underlying Token 
 
-        const SocialImpactVouchFactory = await ethers.getContractFactory("SocialImpactVouchFactory");
-        socialImpactVouchFactory = await SocialImpactVouchFactory.deploy()
+        const SocialImpactVoucherFactory = await ethers.getContractFactory("SocialImpactVoucherFactory");
+        socialImpactVoucherFactory = await SocialImpactVoucherFactory.deploy()
     })
 
-    it("createNewSocialImpactVouch()", async () => {
-        let tx = await socialImpactVouchFactory.createNewSocialImpactVouch(MARKET_REGISTRY,   // MarketRegistry.sol
-                                                                           UNION_TOKEN,       // UnionToken.sol
-                                                                           UNDERLYING_TOKEN,  // Underlying Token 
-                                                                           NON_PROFIT_ORGANIZATION  // Non Profit Organization (wallet address)
+    it("createNewSocialImpactVoucher()", async () => {
+        let tx = await socialImpactVoucherFactory.createNewSocialImpactVoucher(MARKET_REGISTRY,   // MarketRegistry.sol
+                                                                             UNION_TOKEN,       // UnionToken.sol
+                                                                             UNDERLYING_TOKEN,  // Underlying Token 
+                                                                             NON_PROFIT_ORGANIZATION  // Non Profit Organization (wallet address)
                                                                            )
+
         let txReceipt = await tx.wait()
     })
 
