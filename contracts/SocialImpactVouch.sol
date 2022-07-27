@@ -25,7 +25,7 @@ contract SocialImpactVouch is AccessControl, Ownable, UnionVoucher, UnionBorrowe
      *  @param token - Underlying asset address
      */ 
     constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization) BaseUnionMember(marketRegistry, unionToken, token) {
-       _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
+        _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
     }
 
 

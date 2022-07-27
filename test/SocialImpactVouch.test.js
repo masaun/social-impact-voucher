@@ -2,8 +2,11 @@ const { ethers } = require("hardhat");
 const { parseEther } = ethers.utils;
 require("chai").should();
 
+
 describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
+  
   let voucherContract, borrowerContract, userManager, dai, unionToken, uToken;
+
   before(async () => {
     await network.provider.request({
       method: "hardhat_reset",
@@ -18,18 +21,23 @@ describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
         },
       ],
     });
+
     [OWNER, STAKER_A, STAKER_B, STAKER_C, USER] = await ethers.getSigners();
+    
     const admin = "0xd83b4686e434b402c2ce92f4794536962b2be3e8"; //address has usermanager auth
     const daiWallet = "0x6262998Ced04146fA42253a5C0AF90CA02dfd2A3"; //account has dai
     const unionWallet = "0xfc32e7c7c55391ebb4f91187c91418bf96860ca9"; //account has unionToken
+    
     await network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [admin],
     });
+    
     await network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [daiWallet],
     });
+
     await network.provider.request({
       method: "hardhat_impersonateAccount",
       params: [unionWallet],
@@ -38,10 +46,12 @@ describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
     const signer = await ethers.provider.getSigner(admin);
     const daiSigner = await ethers.provider.getSigner(daiWallet);
     const unionSigner = await ethers.provider.getSigner(unionWallet);
+    
     await OWNER.sendTransaction({
       to: admin,
       value: parseEther("10"),
     });
+    
     await OWNER.sendTransaction({
       to: unionWallet,
       value: parseEther("10"),
@@ -67,14 +77,14 @@ describe("SocialImpactVouch.sol - Use Voucher and Borrower", async () => {
     const ExampleVoucher = await ethers.getContractFactory("ExampleVoucher");
     const ExampleBorrower = await ethers.getContractFactory("ExampleBorrower");
     voucherContract = await ExampleVoucher.deploy(
-      "0x1ddB9a1F6Bc0dE1d05eBB0FDA61A7398641ae6BE",
-      "0x5Dfe42eEA70a3e6f93EE54eD9C321aF07A85535C",
-      "0x6b175474e89094c44da98b954eedeac495271d0f"
+      "0x1ddB9a1F6Bc0dE1d05eBB0FDA61A7398641ae6BE",  // MarketRegistry.sol
+      "0x5Dfe42eEA70a3e6f93EE54eD9C321aF07A85535C",  // UnionToken.sol
+      "0x6b175474e89094c44da98b954eedeac495271d0f"   // Underlying Token 
     );
     borrowerContract = await ExampleBorrower.deploy(
-      "0x1ddB9a1F6Bc0dE1d05eBB0FDA61A7398641ae6BE",
-      "0x5Dfe42eEA70a3e6f93EE54eD9C321aF07A85535C",
-      "0x6b175474e89094c44da98b954eedeac495271d0f"
+      "0x1ddB9a1F6Bc0dE1d05eBB0FDA61A7398641ae6BE",  // MarketRegistry.sol
+      "0x5Dfe42eEA70a3e6f93EE54eD9C321aF07A85535C",  // UnionToken.sol
+      "0x6b175474e89094c44da98b954eedeac495271d0f"   // Underlying Token 
     );
 
     const amount = parseEther("1000");
