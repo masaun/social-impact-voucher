@@ -15,9 +15,9 @@ import { NpoNFTFactory } from "./mock/NpoNFTFactory.sol";
 
 
 /**
- * @title - The member manager contract
+ * @title - The member registry contract
  */ 
-contract MemberManager is AccessControl, UnionVoucher, UnionBorrower {
+contract MemberRegistry is AccessControl, UnionVoucher, UnionBorrower {
     uint256 public vouchAmount;
 
     IERC721 public npoNFT;

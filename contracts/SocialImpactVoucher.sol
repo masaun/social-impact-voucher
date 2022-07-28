@@ -47,7 +47,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
     /// Methods to vouch
     ///-------------------------------------
 
-    //@dev - Only a npoNFT holder can be vouched
+    //@dev - Only a NPO that holder a NPO-NFT can be vouched
     function vouchForNpoNFTHolder(address holder) public onlyRole(ADMIN_ROLE) {
         require(npoNFT.balanceOf(holder) > 0, "!holder");
         _updateTrust(holder, vouchAmount);
