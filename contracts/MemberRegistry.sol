@@ -36,24 +36,26 @@ contract MemberRegistry is AccessControl, UnionVoucher, UnionBorrower {
      * @dev - A NPO member receive a NPO-NFT
      */ 
     function registerMemberAsNPO() public {
+        address newNpoMember = msg.sender;
         uint256 newMemberFee = userManager.newMemberFee();
-        unionToken.transferFrom(msg.sender, address(this), newMemberFee);
+        unionToken.transferFrom(newNpoMember, address(this), newMemberFee);
         _registerMember();
 
-        //[TODO]: @dev - A NPO-NFT is created (minted) in the NpoNFTFactory contract
-        IERC721 npoNFT = npoNFTFactory.createNewNpoNFT();  // [TODO]: Assign a NPO-NFT contract instance
+        //@dev - A NPO-NFT is created (minted) to a new NPO member's wallet address in the NpoNFTFactory contract
+        IERC721 npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
 
         //@dev - A NPO-NFT is distributed into the NPO member's wallet address
         uint tokenId = 0;
-        npoNFT.safeTransferFrom(address(this), msg.sender, tokenId);
+        npoNFT.safeTransferFrom(address(this), newNpoMember, tokenId);
     }
 
     /**
      * @notice - Become a member as a supporter
      */ 
     function registerMemberAsSupporter() public {
+        address newSupporterMember = msg.sender;
         uint256 newMemberFee = userManager.newMemberFee();
-        unionToken.transferFrom(msg.sender, address(this), newMemberFee);
+        unionToken.transferFrom(newSupporterMember, address(this), newMemberFee);
         _registerMember();
     }
 

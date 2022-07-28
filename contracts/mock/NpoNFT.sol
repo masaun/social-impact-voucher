@@ -8,14 +8,16 @@ import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * @title - The NPO NFT contract
  */ 
-contract NpoNFT is ERC721, Ownable { 
+contract NpoNFT is ERC721, Ownable {
 
-    constructor() ERC721("NPO NFT", "NPO_NFT") {
-        //[TODO]: 
-    }
-
-    function safeMint(address to, uint256 tokenId) public onlyOwner {
+    constructor(address npoMember) ERC721("NPO NFT", "NPO_NFT") {
+        address to = npoMember;  // [NOTE]: msg.sender is a NPO member's wallet address
+        uint256 tokenId = 0; 
         _safeMint(to, tokenId);
     }
+
+    // function safeMint(address to, uint256 tokenId) public onlyOwner {
+    //     _safeMint(to, tokenId);
+    // }
 
 }
