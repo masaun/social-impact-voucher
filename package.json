@@ -7,6 +7,7 @@
     "test-unit:union-v1-sdk": "yarn hardhat test ./test/union-v1-sdk/*.js",
     "test-unit:SocialImpactVoucher": "yarn hardhat test ./test/unit/SocialImpactVoucher.test.js",
     "test-unit:SocialImpactVoucherFactory": "yarn hardhat test ./test/unit/SocialImpactVoucherFactory.test.js",
+    "test-scenario:SocialImpactVoucher": "yarn hardhat test ./test/scenario/Scenario.test.js",
     "test": "yarn hardhat test ./test/*.js"
   },
   "repository": {

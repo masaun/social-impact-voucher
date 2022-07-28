@@ -11,6 +11,13 @@ yarn compile
 <br>
 
 ## Test
+- Scenario Test
+```
+yarn test-scenario:SocialImpactVoucher
+```
+
+<br>
+
 - Unit Test of SocialImpactVoucher.sol
 ```
 yarn test-unit:SocialImpactVoucher
