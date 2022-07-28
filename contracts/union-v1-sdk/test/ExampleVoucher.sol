@@ -6,7 +6,7 @@ import "../UnionVoucher.sol";
 
 contract ExampleVoucher is Ownable, UnionVoucher{
     constructor(address marketRegistry, address unionToken, address token) BaseUnionMember(marketRegistry,unionToken,token) {
-     
+
     }
 
     //become a member
