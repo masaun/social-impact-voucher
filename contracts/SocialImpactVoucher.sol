@@ -19,6 +19,7 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
 
     uint256 public vouchAmount;
+
     IERC721 public npoNFT;
 
     //@dev - Roles

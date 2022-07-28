@@ -15,9 +15,11 @@ contract NpoNFTFactory {
         //[TODO]: 
     }
 
-    function createNewNpoNFT() public returns (bool) {
+    function createNewNpoNFT() public returns (NpoNFT _npoNFT) {
         NpoNFT npoNFT = new NpoNFT();
         npoNFTs.push(address(npoNFT));
+
+        return npoNFT;
     }
 
 }
