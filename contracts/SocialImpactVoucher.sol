@@ -76,40 +76,4 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
         _debtWriteOff(borrower, amount);
     }
 
-
-    ///-------------------------------------
-    /// Methods to borrow from credit line based on voucher that a NPO has
-    ///-------------------------------------
-    function borrow(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        _borrow(amount);
-        underlyingToken.transfer(msg.sender, amount);
-    }
-
-    function repayBorrow(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        underlyingToken.transferFrom(msg.sender, address(this), amount);
-        _repayBorrow(amount);
-    }
-
-    function repayBorrowBehalf(address account, uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        underlyingToken.transferFrom(msg.sender, address(this), amount);
-        _repayBorrowBehalf(account, amount);
-    }
-    
-    function mint(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        underlyingToken.transferFrom(msg.sender, address(this), amount);
-        _mint(amount);
-    }
-    
-    // sender redeems uTokens in exchange for the underlying asset
-    function redeem(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        _redeem(amount);
-        underlyingToken.transfer(msg.sender, underlyingToken.balanceOf(address(this)));
-    }
-
-    // sender redeems uTokens in exchange for a specified amount of underlying asset
-    function redeemUnderlying(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        _redeemUnderlying(amount);
-        underlyingToken.transfer(msg.sender, underlyingToken.balanceOf(address(this)));
-    }
-
 }
