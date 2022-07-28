@@ -3,10 +3,12 @@ pragma solidity ^0.8.4;
 
 import { SocialImpactVoucher } from "./SocialImpactVoucher.sol";
 
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+
 
 /**
  * @title - Social Impact Voucher Factory contract
- */ 
+ */
 contract SocialImpactVoucherFactory {
     
     address[] public socialImpactVouchers;
@@ -18,8 +20,8 @@ contract SocialImpactVoucherFactory {
     /**
      * @notice - Create a new SocialImpactVoucher contract
      */ 
-    function createNewSocialImpactVoucher(address marketRegistry, address unionToken, address token, address nonProfitOrganization) public {
-        SocialImpactVoucher socialImpactVoucher = new SocialImpactVoucher(marketRegistry, unionToken, token, nonProfitOrganization);
+    function createNewSocialImpactVoucher(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint vouchAmount, IERC721 membershipNFT) public {
+        SocialImpactVoucher socialImpactVoucher = new SocialImpactVoucher(marketRegistry, unionToken, token, nonProfitOrganization, vouchAmount, membershipNFT);
         address SOCIAL_IMPACT_VOUCHER = address(socialImpactVoucher);
         socialImpactVouchers.push(SOCIAL_IMPACT_VOUCHER);
     }

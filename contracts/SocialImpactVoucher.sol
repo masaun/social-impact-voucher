@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 //@dev - Import the Union Finance V1 SDK contracts from union-v1-sdk
 import { UnionVoucher } from "./union-v1-sdk/UnionVoucher.sol";
@@ -10,10 +11,15 @@ import { UnionBorrower } from "./union-v1-sdk/UnionBorrower.sol";
 import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 
 
+
 /**
  * @title - Social Impact Voucher contract
+ * @notice - A UnionMember that vouches for holders of membership NFTs
  */ 
 contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorrower {
+
+    uint256 public vouchAmount;
+    IERC721 public membershipNFT;
 
     //@dev - Roles
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
@@ -24,7 +30,12 @@ contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorro
      *  @param unionToken - UNION token address
      *  @param token - Underlying asset address
      */ 
-    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization) BaseUnionMember(marketRegistry, unionToken, token) {
+    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, IERC721 _membershipNFT) BaseUnionMember(marketRegistry, unionToken, token) {
+        //@dev - Member NFTs
+        membershipNFT = _membershipNFT;
+        vouchAmount = _vouchAmount;
+
+        //@dev - Set roles
         _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
     }
 
@@ -43,9 +54,10 @@ contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorro
         _registerMember();
     }
 
-    // update trust for account
-    function updateTrust(address account, uint256 amount) public onlyOwner {
-        _updateTrust(account, amount);
+    //@dev - Only a membershipNFT holder can be vouched
+    function vouchForMembershipNFTHolder(address holder) public onlyOwner {
+        require(membershipNFT.balanceOf(holder) > 0, "!holder");
+        _updateTrust(holder, vouchAmount);
     }
 
 
