@@ -11,7 +11,6 @@ import { UnionBorrower } from "./union-v1-sdk/UnionBorrower.sol";
 import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 
 
-
 /**
  * @title - Social Impact Voucher contract
  * @notice - A UnionMember that vouches for holders of membership NFTs
@@ -19,7 +18,7 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorrower {
 
     uint256 public vouchAmount;
-    IERC721 public membershipNFT;
+    IERC721 public npoNFT;
 
     //@dev - Roles
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
@@ -30,9 +29,9 @@ contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorro
      *  @param unionToken - UNION token address
      *  @param token - Underlying asset address
      */ 
-    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, IERC721 _membershipNFT) BaseUnionMember(marketRegistry, unionToken, token) {
+    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, IERC721 _npoNFT) BaseUnionMember(marketRegistry, unionToken, token) {
         //@dev - Member NFTs
-        membershipNFT = _membershipNFT;
+        npoNFT = _npoNFT;
         vouchAmount = _vouchAmount;
 
         //@dev - Set roles
@@ -54,9 +53,9 @@ contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorro
         _registerMember();
     }
 
-    //@dev - Only a membershipNFT holder can be vouched
-    function vouchForMembershipNFTHolder(address holder) public onlyOwner {
-        require(membershipNFT.balanceOf(holder) > 0, "!holder");
+    //@dev - Only a npoNFT holder can be vouched
+    function vouchFornpoNFTHolder(address holder) public onlyOwner {
+        require(npoNFT.balanceOf(holder) > 0, "!holder");
         _updateTrust(holder, vouchAmount);
     }
 
