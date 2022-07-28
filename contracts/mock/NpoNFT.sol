@@ -6,7 +6,7 @@ import { ERC721 } from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
- * @title - The member manager contract
+ * @title - The NPO NFT contract
  */ 
 contract NpoNFT is ERC721, Ownable { 
 
