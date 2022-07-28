@@ -15,7 +15,7 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 /**
  * @title - The member manager contract
  */ 
-contract MemberManager is AccessControl, UnionVoucher, UnionBorrower{
+contract MemberManager is AccessControl, UnionVoucher, UnionBorrower {
     uint256 public vouchAmount;
     IERC721 public npoNFT;
 
