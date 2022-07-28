@@ -1,8 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+//@dev - OpenZeppelin
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+//import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 //@dev - Import the Union Finance V1 SDK contracts from union-v1-sdk
@@ -15,12 +16,13 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
  * @title - Social Impact Voucher contract
  * @notice - A UnionMember that vouches for holders of membership NFTs
  */ 
-contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorrower {
+contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
 
     uint256 public vouchAmount;
     IERC721 public npoNFT;
 
     //@dev - Roles
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
 
     /**
@@ -35,61 +37,48 @@ contract SocialImpactVoucher is AccessControl, Ownable, UnionVoucher, UnionBorro
         vouchAmount = _vouchAmount;
 
         //@dev - Set roles
+        _setupRole(ADMIN_ROLE, nonProfitOrganization);
         _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
-    }
-
-
-    ///----------------------------
-    /// Methods to manage members
-    ///----------------------------
-
-    /**
-     * @notice - Register a new member
-     * @dev - Only the role of "Not Profit Organization" can add a new member 
-     */ 
-    function registerMember() public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
-        uint256 newMemberFee = userManager.newMemberFee();
-        unionToken.transferFrom(msg.sender, address(this), newMemberFee);
-        _registerMember();
-    }
-
-    //@dev - Only a npoNFT holder can be vouched
-    function vouchFornpoNFTHolder(address holder) public onlyOwner {
-        require(npoNFT.balanceOf(holder) > 0, "!holder");
-        _updateTrust(holder, vouchAmount);
     }
 
 
     ///-------------------------------------
     /// Methods to vouch
     ///-------------------------------------
+
+    //@dev - Only a npoNFT holder can be vouched
+    function vouchForNpoNFTHolder(address holder) public onlyRole(ADMIN_ROLE) {
+        require(npoNFT.balanceOf(holder) > 0, "!holder");
+        _updateTrust(holder, vouchAmount);
+    }
+
     //@dev - Stop vouch for other member
-    function cancelVouch(address staker, address borrower) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
+    function cancelVouch(address staker, address borrower) public {
         _cancelVouch(staker, borrower);
     }
 
-    function stake(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
+    function stake(uint256 amount) public {
         underlyingToken.transferFrom(msg.sender, address(this), amount);
         _stake(amount);
     }
 
-    function unstake(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
+    function unstake(uint256 amount) public {
         _unstake(amount);
         underlyingToken.transfer(msg.sender, amount);
     }
 
-    function withdrawRewards() public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
+    function withdrawRewards() public {
         _withdrawRewards();
         unionToken.transfer(msg.sender, unionToken.balanceOf(address(this)));
     }
     
-    function debtWriteOff(address borrower, uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
+    function debtWriteOff(address borrower, uint256 amount) public {
         _debtWriteOff(borrower, amount);
     }
 
 
     ///-------------------------------------
-    /// Methods to borrow from credit line
+    /// Methods to borrow from credit line based on voucher that a NPO has
     ///-------------------------------------
     function borrow(uint256 amount) public onlyRole(NON_PROFIT_ORGANIZATION_ROLE) {
         _borrow(amount);
