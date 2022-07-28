@@ -24,7 +24,7 @@ contract MemberManager is AccessControl, UnionVoucher, UnionBorrower{
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
 
     constructor(address marketRegistry, address unionToken, address token) BaseUnionMember(marketRegistry,unionToken,token){
-     
+        //[TODO]: 
     }
 
     /**
