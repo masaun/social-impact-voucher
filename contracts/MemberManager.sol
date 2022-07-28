@@ -11,20 +11,24 @@ import { UnionVoucher } from "./union-v1-sdk/UnionVoucher.sol";
 import { UnionBorrower } from "./union-v1-sdk/UnionBorrower.sol";
 import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 
+import { NpoNFTFactory } from "./mock/NpoNFTFactory.sol";
+
 
 /**
  * @title - The member manager contract
  */ 
-contract MemberManager is AccessControl, UnionVoucher, UnionBorrower{
+contract MemberManager is AccessControl, UnionVoucher, UnionBorrower {
     uint256 public vouchAmount;
+
     IERC721 public npoNFT;
+    NpoNFTFactory public npoNFTFactory;
 
     //@dev - Roles
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
 
-    constructor(address marketRegistry, address unionToken, address token) BaseUnionMember(marketRegistry,unionToken,token){
-        //[TODO]: 
+    constructor(address marketRegistry, address unionToken, address token, NpoNFTFactory _npoNFTFactory) BaseUnionMember(marketRegistry,unionToken,token){
+        npoNFTFactory = _npoNFTFactory;
     }
 
     /**
@@ -37,7 +41,7 @@ contract MemberManager is AccessControl, UnionVoucher, UnionBorrower{
         _registerMember();
 
         //[TODO]: @dev - A NPO-NFT is created (minted) in the NpoNFTFactory contract
-        IERC721 npoNFT;  // [TODO]: Assign a NPO-NFT contract instance
+        IERC721 npoNFT = npoNFTFactory.createNewNpoNFT();  // [TODO]: Assign a NPO-NFT contract instance
 
         //@dev - A NPO-NFT is distributed into the NPO member's wallet address
         uint tokenId = 0;
