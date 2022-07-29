@@ -168,19 +168,25 @@ describe("Scenario Test", async () => {
         await unionToken.connect(signer).disableWhitelist()
         const fee = await userManager.newMemberFee()
         await unionToken.connect(unionSigner).transfer(OWNER, fee.mul(2))
-        await unionToken.connect(owner).approve(memberRegistry.address, fee)
-        await unionToken.connect(owner).approve(memberRegistry.address, fee)
+
+        //@dev - Approve the MemberRegistry.sol to spend UnionToken
+        await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
+        await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
+
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken
+        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
+        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)        
     })
 
     it("Register member as a NPO member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
-
-        //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
-        //let tx = await socialImpactVoucher.registerMemberAsNPO()
-        let tx = await memberRegistry.registerMemberAsNPO()
+        let tx = await socialImpactVoucher.registerMemberAsNPO()
+        //let tx = await memberRegistry.registerMemberAsNPO()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
         let txReceipt = await tx.wait()
-        isMember = await memberRegistry.isMember()
+
+        isMember = await socialImpactVoucher.isMember()
+        //isMember = await memberRegistry.isMember()
         isMember.should.eq(true)
     })
 
@@ -188,11 +194,12 @@ describe("Scenario Test", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
-        //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
-        //let tx = await socialImpactVoucher.registerMemberAsSupporter()
-        let tx = await memberRegistry.registerMemberAsSupporter()
+        let tx = await socialImpactVoucher.registerMemberAsSupporter()
+        //let tx = await memberRegistry.registerMemberAsSupporter()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
         let txReceipt = await tx.wait()
-        isMember = await memberRegistry.isMember()
+
+        isMember = await socialImpactVoucher.isMember()        
+        //isMember = await memberRegistry.isMember()
         isMember.should.eq(true)
     })
 
