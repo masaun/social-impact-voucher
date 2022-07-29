@@ -57,7 +57,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
         _registerMember();  //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
 
         //@dev - A NPO-NFT is created (minted) to a new NPO member's wallet address in the NpoNFTFactory contract
-        IERC721 npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
+        NpoNFT npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
 
         //@dev - A NPO-NFT is distributed into the NPO member's wallet address
         uint tokenId = 0;
