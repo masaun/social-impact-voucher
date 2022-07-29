@@ -150,8 +150,8 @@ describe("Scenario Test", async () => {
         await unionToken.connect(signer).disableWhitelist()
         const fee = await userManager.newMemberFee()
         await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
-        await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
-        await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
+        await unionToken.connect(OWNER).approve(memberRegistry.address, fee)
+        await unionToken.connect(OWNER).approve(memberRegistry.address, fee)
     })
 
     it("Register member as a NPO member", async () => {
