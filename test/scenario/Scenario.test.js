@@ -111,6 +111,22 @@ describe("Scenario Test", async () => {
         dai = await ethers.getContractAt("IERC20", DAI_TOKEN)
         unionToken = await ethers.getContractAt("IUnionToken", UNION_TOKEN)
         uToken = await ethers.getContractAt("IUToken", U_TOKEN)
+
+        //@dev - 3 stakers stake 1000 DAI into Union Protocol
+        const amount = parseEther("1000")
+        await userManager.connect(signer).addMember(STAKER_A)
+        await userManager.connect(signer).addMember(STAKER_B)
+        await userManager.connect(signer).addMember(STAKER_C)
+        await dai.connect(daiSigner).transfer(STAKER_A, amount)
+        await dai.connect(daiSigner).transfer(STAKER_B, amount)
+        await dai.connect(daiSigner).transfer(STAKER_C, amount)
+        await dai.connect(daiSigner).transfer(OWNER, amount)
+        await dai.connect(stakerA).approve(USER_MANAGER, amount)
+        await dai.connect(stakerB).approve(USER_MANAGER, amount)
+        await dai.connect(stakerC).approve(USER_MANAGER, amount)
+        await userManager.connect(stakerA).stake(amount)
+        await userManager.connect(stakerB).stake(amount)
+        await userManager.connect(stakerC).stake(amount)
     })
 
     it("createNewNpoNFT()", async () => {
@@ -142,23 +158,6 @@ describe("Scenario Test", async () => {
     })
 
     it("updateTrust() - Vouch for NPO members", async () => {
-        const amount = parseEther("1000")
-
-        //@dev - Add each wallets addresses to members
-        await userManager.connect(signer).addMember(STAKER_A)
-        await userManager.connect(signer).addMember(STAKER_B)
-        await userManager.connect(signer).addMember(STAKER_C)
-        await dai.connect(daiSigner).transfer(STAKER_A, amount)
-        await dai.connect(daiSigner).transfer(STAKER_B, amount)
-        await dai.connect(daiSigner).transfer(STAKER_C, amount)
-        await dai.connect(daiSigner).transfer(OWNER, amount)
-        await dai.connect(stakerA).approve(USER_MANAGER, amount)
-        await dai.connect(stakerB).approve(USER_MANAGER, amount)
-        await dai.connect(stakerC).approve(USER_MANAGER, amount)
-        await userManager.connect(stakerA).stake(amount)
-        await userManager.connect(stakerB).stake(amount)
-        await userManager.connect(stakerC).stake(amount)
-
         //@dev - Vouch for NPO members (NPO member's addresses) 
         await userManager.connect(stakerA).updateTrust(socialImpactBorrower.address, amount)
     })
