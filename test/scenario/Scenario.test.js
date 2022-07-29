@@ -114,7 +114,7 @@ describe("Scenario Test", async () => {
         socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN)
     })
 
-    it("Add each wallet addresses to members", async () => {
+    it("updateTrust() - Vouch for specified-addresses", async () => {
         const amount = parseEther("1000")
 
         //@dev - Add each wallets addresses to members
@@ -132,19 +132,19 @@ describe("Scenario Test", async () => {
         await userManager.connect(STAKER_B).stake(amount)
         await userManager.connect(STAKER_C).stake(amount)
 
-        // //@dev - Update Trust (Vouch for specified-addresses)
-        // await userManager.connect(STAKER_A).updateTrust(socialImpactVoucher.address, amount)
-        // await userManager.connect(STAKER_B).updateTrust(socialImpactVoucher.address, amount)
-        // await userManager.connect(STAKER_C).updateTrust(socialImpactVoucher.address, amount)
-        // await userManager.connect(STAKER_A).updateTrust(socialImpactBorrower.address, amount)
-        // await userManager.connect(STAKER_B).updateTrust(socialImpactBorrower.address, amount)
-        // await userManager.connect(STAKER_C).updateTrust(socialImpactBorrower.address, amount)
+        //@dev - Vouch for specified-addresses
+        await userManager.connect(STAKER_A).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(STAKER_B).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(STAKER_C).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(STAKER_A).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(STAKER_B).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(STAKER_C).updateTrust(socialImpactBorrower.address, amount)
 
-        // await unionToken.connect(signer).disableWhitelist()
-        // const fee = await userManager.newMemberFee()
-        // await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
-        // await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
-        // await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
+        await unionToken.connect(signer).disableWhitelist()
+        const fee = await userManager.newMemberFee()
+        await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
+        await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
+        await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
     })
 
 })
