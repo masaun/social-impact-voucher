@@ -141,7 +141,7 @@ describe("Scenario Test", async () => {
         console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
 
-    it("updateTrust() - Vouch for specified-addresses", async () => {
+    it("updateTrust() - Vouch for NPO members", async () => {
         const amount = parseEther("1000")
 
         //@dev - Add each wallets addresses to members
@@ -159,13 +159,8 @@ describe("Scenario Test", async () => {
         await userManager.connect(stakerB).stake(amount)
         await userManager.connect(stakerC).stake(amount)
 
-        //@dev - Vouch for specified-addresses
-        await userManager.connect(stakerA).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(stakerB).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(stakerC).updateTrust(socialImpactVoucher.address, amount)
+        //@dev - Vouch for NPO members (NPO member's addresses) 
         await userManager.connect(stakerA).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(stakerB).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(stakerC).updateTrust(socialImpactBorrower.address, amount)
     })
 
     it("Setup new member fee", async () => {
