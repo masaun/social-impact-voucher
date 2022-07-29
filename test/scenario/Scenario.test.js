@@ -15,6 +15,7 @@ describe("Scenario Test", async () => {
     //@dev - Smart contract addresses
     let NPO_NFT
     let NPO_NFT_FACTORY
+    let MEMBER_REGISTRY    // MemberRegistry.sol
     let MARKET_REGISTRY    // MarketRegistry.sol
     let UNION_TOKEN        // UnionToken.sol
     let UNDERLYING_TOKEN   // Underlying Token 
@@ -59,6 +60,12 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the NpoNFTFactory.sol
         const NpoNFTFactory = await ethers.getContractFactory("NpoNFTFactory")
         npoNFTFactory = await NpoNFTFactory.deploy()
+        NPO_NFT_FACTORY = npoNFTFactory.address
+
+        //@dev - Deploy the MemberRegistry.sol
+        const MemberRegistry = await ethers.getContractFactory("MemberRegistry")
+        memberRegistry = await MemberRegistry.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_NFT_FACTORY)
+        MEMBER_REGISTRY = memberRegistry.address
 
         const admin = "0xd83b4686e434b402c2ce92f4794536962b2be3e8"       //address has usermanager auth
         const daiWallet = "0x6262998Ced04146fA42253a5C0AF90CA02dfd2A3"   //account has dai
@@ -145,6 +152,26 @@ describe("Scenario Test", async () => {
         await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
         await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
         await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
+    })
+
+    it("Register member as a NPO member", async () => {
+        let isMember = await memberRegistry.isMember()
+        isMember.should.eq(false)
+
+        //[Error]: "ERC20: transfer amount exceeds allowance"
+        await memberRegistry.registerMemberAsNPO()
+        isMember = await memberRegistry.isMember()
+        isMember.should.eq(true)
+    })
+
+    it("Register member as a Supporter member", async () => {
+        let isMember = await memberRegistry.isMember()
+        isMember.should.eq(false)
+
+        //[Error]: "ERC20: transfer amount exceeds allowance"
+        await memberRegistry.registerMemberAsSupporter()
+        isMember = await memberRegistry.isMember()
+        isMember.should.eq(true)
     })
 
 })
