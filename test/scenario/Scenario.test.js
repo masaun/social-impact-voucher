@@ -146,7 +146,9 @@ describe("Scenario Test", async () => {
         await userManager.connect(STAKER_A).updateTrust(socialImpactBorrower.address, amount)
         await userManager.connect(STAKER_B).updateTrust(socialImpactBorrower.address, amount)
         await userManager.connect(STAKER_C).updateTrust(socialImpactBorrower.address, amount)
+    })
 
+    it("Setup new member fee", async () => {
         await unionToken.connect(signer).disableWhitelist()
         const fee = await userManager.newMemberFee()
         await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
