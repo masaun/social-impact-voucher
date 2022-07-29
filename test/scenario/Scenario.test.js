@@ -31,6 +31,9 @@ describe("Scenario Test", async () => {
     let unionSigner
     let owner, stakerA, stakerB, stakerC, user, npoMember1
 
+    //@dev - Member fee
+    let fee
+
     before(async () => {
 
         //@dev - Mainnet-forking test
@@ -166,23 +169,27 @@ describe("Scenario Test", async () => {
 
     it("Setup new member fee", async () => {
         await unionToken.connect(signer).disableWhitelist()
-        const fee = await userManager.newMemberFee()
+        fee = await userManager.newMemberFee()
         await unionToken.connect(unionSigner).transfer(OWNER, fee.mul(2))
+        await unionToken.connect(unionSigner).transfer(NPO_MEMBER_1, fee.mul(2))
+        await unionToken.connect(unionSigner).transfer(USER, fee.mul(2))
 
-        //@dev - Approve the MemberRegistry.sol to spend UnionToken
-        await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
-        await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
+        //@dev - Approve the MemberRegistry.sol to spend UnionToken as a member fee
+        //await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
 
-        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken
-        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
-        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)        
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        //await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
     })
 
-    it("Register member as a NPO member", async () => {
+    it("Register a user as a NPO member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
-        let tx = await socialImpactVoucher.registerMemberAsNPO()
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        await unionToken.connect(npoMember1).approve(SOCIAL_IMPACT_VOUCHER, fee)
+
+        //@dev - Registrer a user as a NPO member
+        let tx = await socialImpactVoucher.connect(npoMember1).registerMemberAsNPO()
         //let tx = await memberRegistry.registerMemberAsNPO()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
         let txReceipt = await tx.wait()
 
@@ -191,11 +198,15 @@ describe("Scenario Test", async () => {
         isMember.should.eq(true)
     })
 
-    it("Register member as a Supporter member", async () => {
+    it("Register a user as a Supporter member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
-        let tx = await socialImpactVoucher.registerMemberAsSupporter()
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        await unionToken.connect(user).approve(SOCIAL_IMPACT_VOUCHER, fee)
+
+        //@dev - Registrer a user as a Supporter member
+        let tx = await socialImpactVoucher.connect(user).registerMemberAsSupporter()
         //let tx = await memberRegistry.registerMemberAsSupporter()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
         let txReceipt = await tx.wait()
 
