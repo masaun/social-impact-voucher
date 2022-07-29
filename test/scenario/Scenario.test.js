@@ -1,14 +1,20 @@
-const { ethers } = require("hardhat");
-const { parseEther } = ethers.utils;
-require("chai").should();
+const { ethers } = require("hardhat")
+const { parseEther } = ethers.utils
+const { toWei, fromWei, getEventLog } = require("../ethersjs-helper/ethersjsHelper")
+require("chai").should()
 
 
+/**
+ * @title - Scenario Test
+ */ 
 describe("Scenario Test", async () => {
-  
+
     //@dev - Smart contract instances
     let npoNFTFactory, userManager, dai, unionToken, uToken;
 
     //@dev - Smart contract addresses
+    let NPO_NFT
+    let NPO_NFT_FACTORY
     let MARKET_REGISTRY    // MarketRegistry.sol
     let UNION_TOKEN        // UnionToken.sol
     let UNDERLYING_TOKEN   // Underlying Token 
@@ -48,6 +54,13 @@ describe("Scenario Test", async () => {
     it("createNewNpoNFT()", async () => {
         let tx = await npoNFTFactory.createNewNpoNFT(NPO_MEMBER_1)
         let txReceipt = await tx.wait()
+
+        const eventName = "NpoNFTCreated"
+        let eventLog = await getEventLog(txReceipt, eventName)
+        console.log(`eventLog of "NpoNFTCreated": ${ eventLog }`)
+
+        NPO_NFT = eventLog[0]
+        NPO_NFT.toString().should.eq(eventLog[0]);
     })
 
 })
