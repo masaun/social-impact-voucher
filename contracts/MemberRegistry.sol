@@ -34,7 +34,7 @@ contract MemberRegistry is AccessControl, UnionVoucher, UnionBorrower {
     /**
      * @notice - Become a member as a NPO
      * @dev - A NPO member receive a NPO-NFT
-     */ 
+     */
     function registerMemberAsNPO() public {
         address newNpoMember = msg.sender;
         uint256 newMemberFee = userManager.newMemberFee();
