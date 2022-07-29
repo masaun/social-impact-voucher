@@ -11,6 +11,9 @@ import { UnionVoucher } from "./union-v1-sdk/UnionVoucher.sol";
 import { UnionBorrower } from "./union-v1-sdk/UnionBorrower.sol";
 import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 
+import { NpoNFT } from "./mock/NpoNFT.sol";
+import { NpoNFTFactory } from "./mock/NpoNFTFactory.sol";
+
 
 /**
  * @title - Social Impact Voucher contract
@@ -20,7 +23,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
 
     uint256 public vouchAmount;
 
-    IERC721 public npoNFT;
+    NpoNFTFactory public npoNFTFactory;
 
     //@dev - Roles
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -32,14 +35,43 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
      *  @param unionToken - UNION token address
      *  @param token - Underlying asset address
      */ 
-    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, IERC721 _npoNFT) BaseUnionMember(marketRegistry, unionToken, token) {
+    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, NpoNFTFactory _npoNFTFactory) BaseUnionMember(marketRegistry, unionToken, token) {
         //@dev - Member NFTs
-        npoNFT = _npoNFT;
         vouchAmount = _vouchAmount;
+        npoNFTFactory = _npoNFTFactory;
 
         //@dev - Set roles
         _setupRole(ADMIN_ROLE, nonProfitOrganization);
         _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
+    }
+
+
+    /**
+     * @notice - Become a member as a NPO
+     * @dev - A NPO member receive a NPO-NFT
+     */
+    function registerMemberAsNPO() public {
+        address newNpoMember = msg.sender;
+        uint256 newMemberFee = userManager.newMemberFee();
+        unionToken.transferFrom(newNpoMember, address(this), newMemberFee);
+        _registerMember();  //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+
+        //@dev - A NPO-NFT is created (minted) to a new NPO member's wallet address in the NpoNFTFactory contract
+        IERC721 npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
+
+        //@dev - A NPO-NFT is distributed into the NPO member's wallet address
+        uint tokenId = 0;
+        npoNFT.safeTransferFrom(address(this), newNpoMember, tokenId);
+    }
+
+    /**
+     * @notice - Become a member as a supporter
+     */ 
+    function registerMemberAsSupporter() public {
+        address newSupporterMember = msg.sender;
+        uint256 newMemberFee = userManager.newMemberFee();
+        unionToken.transferFrom(newSupporterMember, address(this), newMemberFee);
+        _registerMember();  //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
     }
 
 
@@ -49,6 +81,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
 
     //@dev - Only a NPO that holder a NPO-NFT can be vouched
     function vouchForNpoNFTHolder(address holder) public onlyRole(ADMIN_ROLE) {
+        NpoNFT npoNFT = NpoNFT(npoNFTFactory.getNpoNFTHolder(holder));
         require(npoNFT.balanceOf(holder) > 0, "!holder");
         _updateTrust(holder, vouchAmount);
     }

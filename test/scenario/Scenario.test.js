@@ -15,6 +15,8 @@ describe("Scenario Test", async () => {
     //@dev - Smart contract addresses
     let NPO_NFT
     let NPO_NFT_FACTORY
+    let SOCIAL_IMPACT_VOUCHER
+    let SOCIAL_IMPACT_BORROWER
     let MEMBER_REGISTRY    // MemberRegistry.sol
     let MARKET_REGISTRY    // MarketRegistry.sol
     let UNION_TOKEN        // UnionToken.sol
@@ -69,6 +71,7 @@ describe("Scenario Test", async () => {
         const NpoNFTFactory = await ethers.getContractFactory("NpoNFTFactory")
         npoNFTFactory = await NpoNFTFactory.deploy()
         NPO_NFT_FACTORY = npoNFTFactory.address
+        console.log(`Deployed-address of the NpoNFTFactory contract: ${ NPO_NFT_FACTORY }`)
 
         //@dev - Deploy the MemberRegistry.sol
         const MemberRegistry = await ethers.getContractFactory("MemberRegistry")
@@ -123,11 +126,15 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the SocialImpactVoucher.sol
         const vouchAmount = parseEther("10000")
         const SocialImpactVoucher = await ethers.getContractFactory("SocialImpactVoucher")
-        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_MEMBER_1, vouchAmount, NPO_NFT)
+        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_MEMBER_1, vouchAmount, NPO_NFT_FACTORY)
+        SOCIAL_IMPACT_VOUCHER = socialImpactVoucher.address
+        console.log(`Deployed-address of the SocialImpactVoucher contract: ${ SOCIAL_IMPACT_VOUCHER }`)
 
         //@dev - Deploy the SocialImpactBorrower.sol
         const SocialImpactBorrower = await ethers.getContractFactory("SocialImpactBorrower")
         socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN)
+        SOCIAL_IMPACT_BORROWER = socialImpactBorrower.address
+        console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
 
     it("updateTrust() - Vouch for specified-addresses", async () => {
@@ -170,6 +177,7 @@ describe("Scenario Test", async () => {
         isMember.should.eq(false)
 
         //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        //let tx = await socialImpactVoucher.registerMemberAsNPO()
         let tx = await memberRegistry.registerMemberAsNPO()
         let txReceipt = await tx.wait()
         isMember = await memberRegistry.isMember()
@@ -181,6 +189,7 @@ describe("Scenario Test", async () => {
         isMember.should.eq(false)
 
         //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        //let tx = await socialImpactVoucher.registerMemberAsSupporter()
         let tx = await memberRegistry.registerMemberAsSupporter()
         let txReceipt = await tx.wait()
         isMember = await memberRegistry.isMember()

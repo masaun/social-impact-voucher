@@ -11,6 +11,8 @@ interface INpoNFTFactory {
 
     function createNewNpoNFT(address npoMember) external returns (NpoNFT _npoNFT);
 
+    function getNpoNFTHolder(address npoMember) external returns (address _npoNFTHolder);
+
     event NpoNFTCreated(
         NpoNFT npoNFT
     );
