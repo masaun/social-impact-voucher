@@ -15,17 +15,24 @@ describe("Scenario Test", async () => {
     //@dev - Smart contract addresses
     let NPO_NFT
     let NPO_NFT_FACTORY
+    let SOCIAL_IMPACT_VOUCHER
+    let SOCIAL_IMPACT_BORROWER
+    let MEMBER_REGISTRY    // MemberRegistry.sol
     let MARKET_REGISTRY    // MarketRegistry.sol
     let UNION_TOKEN        // UnionToken.sol
     let UNDERLYING_TOKEN   // Underlying Token 
 
-    //@dev - Non Profit Organization (wallet address)
-    let NPO_MEMBER_1
+    //@dev - wallet addresses
+    let OWNER, STAKER_A, STAKER_B, STAKER_C, USER, NPO_MEMBER_1
 
     //@dev - Signers
     let signer
     let daiSigner
     let unionSigner
+    let owner, stakerA, stakerB, stakerC, user, npoMember1
+
+    //@dev - Member fee
+    let fee
 
     before(async () => {
 
@@ -44,8 +51,15 @@ describe("Scenario Test", async () => {
             ],
         });
 
-        [OWNER, STAKER_A, STAKER_B, STAKER_C, USER, npoMember1] = await ethers.getSigners();
+        //@dev - Get signers of each accounts
+        [owner, stakerA, stakerB, stakerC, user, npoMember1] = await ethers.getSigners();
 
+        //@dev - Get wallet addresses of each accounts
+        OWNER = owner.address
+        STAKER_A = stakerA.address
+        STAKER_B = stakerB.address
+        STAKER_C = stakerC.address
+        USER = user.address
         NPO_MEMBER_1 = npoMember1.address 
 
         //@dev - Deployed-addresses on Mainnet
@@ -59,6 +73,14 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the NpoNFTFactory.sol
         const NpoNFTFactory = await ethers.getContractFactory("NpoNFTFactory")
         npoNFTFactory = await NpoNFTFactory.deploy()
+        NPO_NFT_FACTORY = npoNFTFactory.address
+        console.log(`Deployed-address of the NpoNFTFactory contract: ${ NPO_NFT_FACTORY }`)
+
+        //@dev - Deploy the MemberRegistry.sol
+        const MemberRegistry = await ethers.getContractFactory("MemberRegistry")
+        memberRegistry = await MemberRegistry.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_NFT_FACTORY)
+        MEMBER_REGISTRY = memberRegistry.address
+        console.log(`Deployed-address of the MemberRegistry contract: ${ MEMBER_REGISTRY }`)
 
         const admin = "0xd83b4686e434b402c2ce92f4794536962b2be3e8"       //address has usermanager auth
         const daiWallet = "0x6262998Ced04146fA42253a5C0AF90CA02dfd2A3"   //account has dai
@@ -80,8 +102,8 @@ describe("Scenario Test", async () => {
         signer = await ethers.provider.getSigner(admin)
         daiSigner = await ethers.provider.getSigner(daiWallet)
         unionSigner = await ethers.provider.getSigner(unionWallet)
-        await OWNER.sendTransaction({ to: admin, value: parseEther("10") })
-        await OWNER.sendTransaction({ to: unionWallet, value: parseEther("10") })
+        await owner.sendTransaction({ to: admin, value: parseEther("10") })
+        await owner.sendTransaction({ to: unionWallet, value: parseEther("10") })
 
         //@dev - Create deployed-contract instances
         userManager = await ethers.getContractAt("IUserManager", USER_MANAGER)
@@ -107,44 +129,90 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the SocialImpactVoucher.sol
         const vouchAmount = parseEther("10000")
         const SocialImpactVoucher = await ethers.getContractFactory("SocialImpactVoucher")
-        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_MEMBER_1, vouchAmount, NPO_NFT)
+        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_MEMBER_1, vouchAmount, NPO_NFT_FACTORY)
+        SOCIAL_IMPACT_VOUCHER = socialImpactVoucher.address
+        console.log(`Deployed-address of the SocialImpactVoucher contract: ${ SOCIAL_IMPACT_VOUCHER }`)
 
         //@dev - Deploy the SocialImpactBorrower.sol
         const SocialImpactBorrower = await ethers.getContractFactory("SocialImpactBorrower")
         socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN)
+        SOCIAL_IMPACT_BORROWER = socialImpactBorrower.address
+        console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
 
     it("updateTrust() - Vouch for specified-addresses", async () => {
         const amount = parseEther("1000")
 
         //@dev - Add each wallets addresses to members
-        await userManager.connect(signer).addMember(STAKER_A.address)
-        await userManager.connect(signer).addMember(STAKER_B.address)
-        await userManager.connect(signer).addMember(STAKER_C.address)
-        await dai.connect(daiSigner).transfer(STAKER_A.address, amount)
-        await dai.connect(daiSigner).transfer(STAKER_B.address, amount)
-        await dai.connect(daiSigner).transfer(STAKER_C.address, amount)
-        await dai.connect(daiSigner).transfer(OWNER.address, amount)
-        await dai.connect(STAKER_A).approve(userManager.address, amount)
-        await dai.connect(STAKER_B).approve(userManager.address, amount)
-        await dai.connect(STAKER_C).approve(userManager.address, amount)
-        await userManager.connect(STAKER_A).stake(amount)
-        await userManager.connect(STAKER_B).stake(amount)
-        await userManager.connect(STAKER_C).stake(amount)
+        await userManager.connect(signer).addMember(STAKER_A)
+        await userManager.connect(signer).addMember(STAKER_B)
+        await userManager.connect(signer).addMember(STAKER_C)
+        await dai.connect(daiSigner).transfer(STAKER_A, amount)
+        await dai.connect(daiSigner).transfer(STAKER_B, amount)
+        await dai.connect(daiSigner).transfer(STAKER_C, amount)
+        await dai.connect(daiSigner).transfer(OWNER, amount)
+        await dai.connect(stakerA).approve(USER_MANAGER, amount)
+        await dai.connect(stakerB).approve(USER_MANAGER, amount)
+        await dai.connect(stakerC).approve(USER_MANAGER, amount)
+        await userManager.connect(stakerA).stake(amount)
+        await userManager.connect(stakerB).stake(amount)
+        await userManager.connect(stakerC).stake(amount)
 
         //@dev - Vouch for specified-addresses
-        await userManager.connect(STAKER_A).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_B).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_C).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_A).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(STAKER_B).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(STAKER_C).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerA).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerB).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerC).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerA).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerB).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerC).updateTrust(socialImpactBorrower.address, amount)
+    })
 
+    it("Setup new member fee", async () => {
         await unionToken.connect(signer).disableWhitelist()
-        const fee = await userManager.newMemberFee()
-        await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
-        await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
-        await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
+        fee = await userManager.newMemberFee()
+        await unionToken.connect(unionSigner).transfer(OWNER, fee.mul(2))
+        await unionToken.connect(unionSigner).transfer(NPO_MEMBER_1, fee.mul(2))
+        await unionToken.connect(unionSigner).transfer(USER, fee.mul(2))
+
+        //@dev - Approve the MemberRegistry.sol to spend UnionToken as a member fee
+        //await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
+
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        //await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
+    })
+
+    it("Register a user as a NPO member", async () => {
+        let isMember = await memberRegistry.isMember()
+        isMember.should.eq(false)
+
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        await unionToken.connect(npoMember1).approve(SOCIAL_IMPACT_VOUCHER, fee)
+
+        //@dev - Registrer a user as a NPO member
+        let tx = await socialImpactVoucher.connect(npoMember1).registerMemberAsNPO()
+        //let tx = await memberRegistry.registerMemberAsNPO()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        let txReceipt = await tx.wait()
+
+        isMember = await socialImpactVoucher.isMember()
+        //isMember = await memberRegistry.isMember()
+        isMember.should.eq(true)
+    })
+
+    it("Register a user as a Supporter member", async () => {
+        let isMember = await memberRegistry.isMember()
+        isMember.should.eq(false)
+
+        //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
+        await unionToken.connect(user).approve(SOCIAL_IMPACT_VOUCHER, fee)
+
+        //@dev - Registrer a user as a Supporter member
+        let tx = await socialImpactVoucher.connect(user).registerMemberAsSupporter()
+        //let tx = await memberRegistry.registerMemberAsSupporter()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        let txReceipt = await tx.wait()
+
+        isMember = await socialImpactVoucher.isMember()        
+        //isMember = await memberRegistry.isMember()
+        isMember.should.eq(true)
     })
 
 })

@@ -15,6 +15,7 @@ import { Events } from "../libraries/Events.sol";
 contract NpoNFTFactory is INpoNFTFactory { 
 
     address[] public npoNFTs;
+    mapping (address => address) npoNFTHolders;  // [Key]: Account address -> NpoNFT contract address
 
     constructor() {
         //[TODO]: 
@@ -23,10 +24,15 @@ contract NpoNFTFactory is INpoNFTFactory {
     function createNewNpoNFT(address npoMember) public override returns (NpoNFT _npoNFT) {
         NpoNFT npoNFT = new NpoNFT(npoMember);
         npoNFTs.push(address(npoNFT));
+        npoNFTHolders[npoMember] = address(npoNFT);
 
         emit Events.NpoNFTCreated(npoNFT);
 
         return npoNFT;
+    }
+
+    function getNpoNFTHolder(address npoMember) public override returns (address _npoNFTHolder) {
+        return npoNFTHolders[npoMember];
     }
 
 }
