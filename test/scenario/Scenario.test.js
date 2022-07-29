@@ -181,6 +181,7 @@ describe("Scenario Test", async () => {
     it("Register member as a NPO member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
+
         let tx = await socialImpactVoucher.registerMemberAsNPO()
         //let tx = await memberRegistry.registerMemberAsNPO()     //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
         let txReceipt = await tx.wait()

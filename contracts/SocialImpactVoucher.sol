@@ -57,11 +57,8 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
         _registerMember();  //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
 
         //@dev - A NPO-NFT is created (minted) to a new NPO member's wallet address in the NpoNFTFactory contract
+        //@dev - Then, A NPO-NFT is distributed into the NPO member's wallet address
         NpoNFT npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
-
-        //@dev - A NPO-NFT is distributed into the NPO member's wallet address
-        uint tokenId = 0;
-        npoNFT.safeTransferFrom(address(this), newNpoMember, tokenId);
     }
 
     /**
@@ -71,7 +68,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
         address newSupporterMember = msg.sender;
         uint256 newMemberFee = userManager.newMemberFee();
         unionToken.transferFrom(newSupporterMember, address(this), newMemberFee);
-        _registerMember();  //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        _registerMember();
     }
 
 
