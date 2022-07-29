@@ -22,6 +22,11 @@ describe("Scenario Test", async () => {
     //@dev - Non Profit Organization (wallet address)
     let NPO_MEMBER_1
 
+    //@dev - Signers
+    let signer
+    let daiSigner
+    let unionSigner
+
     before(async () => {
 
         //@dev - Mainnet-forking test
@@ -72,9 +77,9 @@ describe("Scenario Test", async () => {
             params: [unionWallet],
         })
 
-        const signer = await ethers.provider.getSigner(admin)
-        const daiSigner = await ethers.provider.getSigner(daiWallet)
-        const unionSigner = await ethers.provider.getSigner(unionWallet)
+        signer = await ethers.provider.getSigner(admin)
+        daiSigner = await ethers.provider.getSigner(daiWallet)
+        unionSigner = await ethers.provider.getSigner(unionWallet)
         await OWNER.sendTransaction({ to: admin, value: parseEther("10") })
         await OWNER.sendTransaction({ to: unionWallet, value: parseEther("10") })
 
@@ -95,7 +100,7 @@ describe("Scenario Test", async () => {
 
         //@dev - Assign a NPO_NFT address created into instance
         NPO_NFT = eventLog[0]
-        NPO_NFT.toString().should.eq(eventLog[0]);
+        NPO_NFT.toString().should.eq(eventLog[0])
     })
 
     it("Deploy the SocialImpactVoucher.sol and SocialImpactBorrower.sol", async () => {
@@ -109,24 +114,23 @@ describe("Scenario Test", async () => {
         socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN)
     })
 
+    it("Add each wallet addresses to members", async () => {
+        const amount = parseEther("1000")
 
-
-        // const amount = parseEther("1000")
-
-        // //@dev - Add each wallet addresses to members
-        // await userManager.connect(signer).addMember(STAKER_A.address)
-        // await userManager.connect(signer).addMember(STAKER_B.address)
-        // await userManager.connect(signer).addMember(STAKER_C.address)
-        // await dai.connect(daiSigner).transfer(STAKER_A.address, amount)
-        // await dai.connect(daiSigner).transfer(STAKER_B.address, amount)
-        // await dai.connect(daiSigner).transfer(STAKER_C.address, amount)
-        // await dai.connect(daiSigner).transfer(OWNER.address, amount)
-        // await dai.connect(STAKER_A).approve(userManager.address, amount)
-        // await dai.connect(STAKER_B).approve(userManager.address, amount)
-        // await dai.connect(STAKER_C).approve(userManager.address, amount)
-        // await userManager.connect(STAKER_A).stake(amount)
-        // await userManager.connect(STAKER_B).stake(amount)
-        // await userManager.connect(STAKER_C).stake(amount)
+        //@dev - Add each wallets addresses to members
+        await userManager.connect(signer).addMember(STAKER_A.address)
+        await userManager.connect(signer).addMember(STAKER_B.address)
+        await userManager.connect(signer).addMember(STAKER_C.address)
+        await dai.connect(daiSigner).transfer(STAKER_A.address, amount)
+        await dai.connect(daiSigner).transfer(STAKER_B.address, amount)
+        await dai.connect(daiSigner).transfer(STAKER_C.address, amount)
+        await dai.connect(daiSigner).transfer(OWNER.address, amount)
+        await dai.connect(STAKER_A).approve(userManager.address, amount)
+        await dai.connect(STAKER_B).approve(userManager.address, amount)
+        await dai.connect(STAKER_C).approve(userManager.address, amount)
+        await userManager.connect(STAKER_A).stake(amount)
+        await userManager.connect(STAKER_B).stake(amount)
+        await userManager.connect(STAKER_C).stake(amount)
 
         // //@dev - Update Trust (Vouch for specified-addresses)
         // await userManager.connect(STAKER_A).updateTrust(socialImpactVoucher.address, amount)
@@ -141,5 +145,6 @@ describe("Scenario Test", async () => {
         // await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
         // await unionToken.connect(OWNER).approve(socialImpactVoucher.address, fee)
         // await unionToken.connect(OWNER).approve(socialImpactBorrower.address, fee)
+    })
 
 })
