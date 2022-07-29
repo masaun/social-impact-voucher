@@ -20,13 +20,14 @@ describe("Scenario Test", async () => {
     let UNION_TOKEN        // UnionToken.sol
     let UNDERLYING_TOKEN   // Underlying Token 
 
-    //@dev - Non Profit Organization (wallet address)
-    let NPO_MEMBER_1
+    //@dev - wallet addresses
+    let OWNER, STAKER_A, STAKER_B, STAKER_C, USER, NPO_MEMBER_1
 
     //@dev - Signers
     let signer
     let daiSigner
     let unionSigner
+    let owner, stakerA, stakerB, stakerC, user, npoMember1
 
     before(async () => {
 
@@ -45,8 +46,15 @@ describe("Scenario Test", async () => {
             ],
         });
 
-        [OWNER, STAKER_A, STAKER_B, STAKER_C, USER, npoMember1] = await ethers.getSigners();
+        //@dev - Get signers of each accounts
+        [owner, stakerA, stakerB, stakerC, user, npoMember1] = await ethers.getSigners();
 
+        //@dev - Get wallet addresses of each accounts
+        OWNER = owner.address
+        STAKER_A = stakerA.address
+        STAKER_B = stakerB.address
+        STAKER_C = stakerC.address
+        USER = user.address
         NPO_MEMBER_1 = npoMember1.address 
 
         //@dev - Deployed-addresses on Mainnet
@@ -66,6 +74,7 @@ describe("Scenario Test", async () => {
         const MemberRegistry = await ethers.getContractFactory("MemberRegistry")
         memberRegistry = await MemberRegistry.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_NFT_FACTORY)
         MEMBER_REGISTRY = memberRegistry.address
+        console.log(`Deployed-address of the MemberRegistry contract: ${ MEMBER_REGISTRY }`)
 
         const admin = "0xd83b4686e434b402c2ce92f4794536962b2be3e8"       //address has usermanager auth
         const daiWallet = "0x6262998Ced04146fA42253a5C0AF90CA02dfd2A3"   //account has dai
@@ -87,8 +96,8 @@ describe("Scenario Test", async () => {
         signer = await ethers.provider.getSigner(admin)
         daiSigner = await ethers.provider.getSigner(daiWallet)
         unionSigner = await ethers.provider.getSigner(unionWallet)
-        await OWNER.sendTransaction({ to: admin, value: parseEther("10") })
-        await OWNER.sendTransaction({ to: unionWallet, value: parseEther("10") })
+        await owner.sendTransaction({ to: admin, value: parseEther("10") })
+        await owner.sendTransaction({ to: unionWallet, value: parseEther("10") })
 
         //@dev - Create deployed-contract instances
         userManager = await ethers.getContractAt("IUserManager", USER_MANAGER)
@@ -125,43 +134,44 @@ describe("Scenario Test", async () => {
         const amount = parseEther("1000")
 
         //@dev - Add each wallets addresses to members
-        await userManager.connect(signer).addMember(STAKER_A.address)
-        await userManager.connect(signer).addMember(STAKER_B.address)
-        await userManager.connect(signer).addMember(STAKER_C.address)
-        await dai.connect(daiSigner).transfer(STAKER_A.address, amount)
-        await dai.connect(daiSigner).transfer(STAKER_B.address, amount)
-        await dai.connect(daiSigner).transfer(STAKER_C.address, amount)
-        await dai.connect(daiSigner).transfer(OWNER.address, amount)
-        await dai.connect(STAKER_A).approve(userManager.address, amount)
-        await dai.connect(STAKER_B).approve(userManager.address, amount)
-        await dai.connect(STAKER_C).approve(userManager.address, amount)
-        await userManager.connect(STAKER_A).stake(amount)
-        await userManager.connect(STAKER_B).stake(amount)
-        await userManager.connect(STAKER_C).stake(amount)
+        await userManager.connect(signer).addMember(STAKER_A)
+        await userManager.connect(signer).addMember(STAKER_B)
+        await userManager.connect(signer).addMember(STAKER_C)
+        await dai.connect(daiSigner).transfer(STAKER_A, amount)
+        await dai.connect(daiSigner).transfer(STAKER_B, amount)
+        await dai.connect(daiSigner).transfer(STAKER_C, amount)
+        await dai.connect(daiSigner).transfer(OWNER, amount)
+        await dai.connect(stakerA).approve(USER_MANAGER, amount)
+        await dai.connect(stakerB).approve(USER_MANAGER, amount)
+        await dai.connect(stakerC).approve(USER_MANAGER, amount)
+        await userManager.connect(stakerA).stake(amount)
+        await userManager.connect(stakerB).stake(amount)
+        await userManager.connect(stakerC).stake(amount)
 
         //@dev - Vouch for specified-addresses
-        await userManager.connect(STAKER_A).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_B).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_C).updateTrust(socialImpactVoucher.address, amount)
-        await userManager.connect(STAKER_A).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(STAKER_B).updateTrust(socialImpactBorrower.address, amount)
-        await userManager.connect(STAKER_C).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerA).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerB).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerC).updateTrust(socialImpactVoucher.address, amount)
+        await userManager.connect(stakerA).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerB).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerC).updateTrust(socialImpactBorrower.address, amount)
     })
 
     it("Setup new member fee", async () => {
         await unionToken.connect(signer).disableWhitelist()
         const fee = await userManager.newMemberFee()
-        await unionToken.connect(unionSigner).transfer(OWNER.address, fee.mul(2))
-        await unionToken.connect(OWNER).approve(memberRegistry.address, fee)
-        await unionToken.connect(OWNER).approve(memberRegistry.address, fee)
+        await unionToken.connect(unionSigner).transfer(OWNER, fee.mul(2))
+        await unionToken.connect(owner).approve(memberRegistry.address, fee)
+        await unionToken.connect(owner).approve(memberRegistry.address, fee)
     })
 
     it("Register member as a NPO member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
-        //[Error]: "ERC20: transfer amount exceeds allowance"
-        await memberRegistry.registerMemberAsNPO()
+        //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        let tx = await memberRegistry.registerMemberAsNPO()
+        let txReceipt = await tx.wait()
         isMember = await memberRegistry.isMember()
         isMember.should.eq(true)
     })
@@ -170,8 +180,9 @@ describe("Scenario Test", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
-        //[Error]: "ERC20: transfer amount exceeds allowance"
-        await memberRegistry.registerMemberAsSupporter()
+        //[Error]: "<UnrecognizedContract>.<unknown> (0x49c910ba694789b58f53bff80633f90b8631c195)"
+        let tx = await memberRegistry.registerMemberAsSupporter()
+        let txReceipt = await tx.wait()
         isMember = await memberRegistry.isMember()
         isMember.should.eq(true)
     })
