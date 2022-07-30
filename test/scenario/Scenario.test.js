@@ -275,4 +275,26 @@ describe("Scenario Test", async () => {
         vouchAmount.toString().should.eq("0")
     })
 
+    it("mint 100 uDAI", async () => {
+        const amount = parseEther("100")
+
+        let balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
+        balance.toString().should.eq("0")
+        
+        // Mint uDAI (based on uToken)
+        await dai.approve(SOCIAL_IMPACT_BORROWER, amount)
+        await socialImpactBorrower.mint(amount)
+        balance = await uToken.balanceOf(socialImpactBorrower.address)
+        balance.toString().should.eq(amount.toString())
+    })
+
+    it("redeem 100 uDAI with 100 DAI", async () => {
+        const amount = parseEther("100")
+
+        // Redeem uDAI with DAI
+        await socialImpactBorrower.redeem(amount)
+        balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
+        balance.toString().should.eq("0")
+    })
+
 })
