@@ -230,4 +230,24 @@ describe("Scenario Test", async () => {
         isMember.should.eq(true)
     })
 
+    it("stake and unstake", async () => {
+        const amount = parseEther("100")
+
+        let stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq("0")
+
+        await dai.approve(socialImpactVoucher.address, amount)
+        await socialImpactVoucher.stake(amount)
+        stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq(amount.toString())
+
+        await socialImpactVoucher.unstake(amount)
+        stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq("0")
+
+        await dai.approve(socialImpactVoucher.address, amount)
+        await socialImpactVoucher.stake(amount)
+    })
+
+
 })
