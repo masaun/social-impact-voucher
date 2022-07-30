@@ -230,7 +230,7 @@ describe("Scenario Test", async () => {
         isMember.should.eq(true)
     })
 
-    it("stake and unstake", async () => {
+    it("stake 100 DAI and unstake 100 DAI", async () => {
         const amount = parseEther("100")
 
         let stakeBalance = await socialImpactVoucher.getStakerBalance()
@@ -247,6 +247,13 @@ describe("Scenario Test", async () => {
 
         await dai.approve(socialImpactVoucher.address, amount)
         await socialImpactVoucher.stake(amount)
+    })
+
+    it("withdraw rewards", async () => {
+        const balanceBefore = await unionToken.balanceOf(OWNER)
+        await socialImpactVoucher.withdrawRewards()
+        const balanceAfter = await unionToken.balanceOf(OWNER)
+        balanceAfter.toNumber().should.above(balanceBefore.toNumber())
     })
 
 
