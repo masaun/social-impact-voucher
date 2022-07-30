@@ -27,7 +27,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
 
     //@dev - Roles
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant NON_PROFIT_ORGANIZATION_ROLE = keccak256("NON_PROFIT_ORGANIZATION_ROLE");
+    bytes32 public constant SUPPORTER_MEMBER_ROLE = keccak256("SUPPORTER_MEMBER_ROLE");
 
     /**
      *  @notice - Constructor
@@ -35,34 +35,18 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
      *  @param unionToken - UNION token address
      *  @param token - Underlying asset address
      */ 
-    constructor(address marketRegistry, address unionToken, address token, address nonProfitOrganization, uint _vouchAmount, NpoNFTFactory _npoNFTFactory) BaseUnionMember(marketRegistry, unionToken, token) {
+    constructor(address marketRegistry, address unionToken, address token, address supporterUser, uint _vouchAmount, NpoNFTFactory _npoNFTFactory) BaseUnionMember(marketRegistry, unionToken, token) {
         //@dev - Member NFTs
         vouchAmount = _vouchAmount;
         npoNFTFactory = _npoNFTFactory;
 
         //@dev - Set roles
-        _setupRole(ADMIN_ROLE, nonProfitOrganization);
-        _setupRole(NON_PROFIT_ORGANIZATION_ROLE, nonProfitOrganization);
-    }
-
-
-    /**
-     * @notice - Become a member as a NPO
-     * @dev - A NPO member receive a NPO-NFT
-     */
-    function registerMemberAsNPO() public {
-        address newNpoMember = msg.sender;
-        uint256 newMemberFee = userManager.newMemberFee();
-        unionToken.transferFrom(newNpoMember, address(this), newMemberFee);
-        _registerMember();
-
-        //@dev - A NPO-NFT is created (minted) to a new NPO member's wallet address in the NpoNFTFactory contract
-        //@dev - Then, A NPO-NFT is distributed into the NPO member's wallet address
-        NpoNFT npoNFT = npoNFTFactory.createNewNpoNFT(newNpoMember);
+        _setupRole(ADMIN_ROLE, msg.sender);
+        _setupRole(SUPPORTER_MEMBER_ROLE, supporterUser);
     }
 
     /**
-     * @notice - Become a member as a supporter
+     * @notice - Become a member as a Supporter (Voucher)
      */ 
     function registerMemberAsSupporter() public {
         address newSupporterMember = msg.sender;
