@@ -249,11 +249,26 @@ describe("Scenario Test", async () => {
         await socialImpactVoucher.stake(amount)
     })
 
-    it("withdraw rewards", async () => {
+    it("withdraw rewards in UnionToken", async () => {
         const balanceBefore = await unionToken.balanceOf(OWNER)
         await socialImpactVoucher.withdrawRewards()
         const balanceAfter = await unionToken.balanceOf(OWNER)
         balanceAfter.toNumber().should.above(balanceBefore.toNumber())
+    })
+
+    it("update trust and cancel", async () => {
+        const amount = parseEther("100");
+        
+        let vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq("0");
+        
+        await socialImpactVoucher.updateTrust(NPO_USER_1, amount)
+        vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq(amount.toString())
+
+        await socialImpactVoucher.cancelVouch(SOCIAL_IMPACT_VOUCHER, NPO_USER_1);
+        vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq("0")
     })
 
 
