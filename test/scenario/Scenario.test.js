@@ -283,7 +283,7 @@ describe("Scenario Test", async () => {
         
         // Mint uDAI (based on uToken)
         await dai.approve(SOCIAL_IMPACT_BORROWER, amount)
-        await socialImpactBorrower.mint(amount)
+        await socialImpactBorrower.connect(npoUser1).mint(amount)
         balance = await uToken.balanceOf(socialImpactBorrower.address)
         balance.toString().should.eq(amount.toString())
     })
@@ -292,7 +292,7 @@ describe("Scenario Test", async () => {
         const amount = parseEther("100")
 
         // Redeem uDAI with DAI
-        await socialImpactBorrower.redeem(amount)
+        await socialImpactBorrower.connect(npoUser1).redeem(amount)
         balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
         balance.toString().should.eq("0")
     })
