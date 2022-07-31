@@ -304,4 +304,19 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq("0")
     })
 
+    it("Borrow 100 DAI + Repay principal (100 DAI)", async () => {
+        const amount = parseEther("100")
+        await socialImpactBorrower.connect(npoUser1).borrow(amount);
+        const fee = await uToken.calculatingFee(amount);
+        let borrow = await socialImpactBorrower.borrowBalanceView();
+        parseFloat(borrow).should.eq(parseFloat(amount.add(fee)));
+
+        await dai.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, ethers.constants.MaxUint256)
+        
+        //@dev - Repay principal
+        await socialImpactBorrower.connect(npoUser1).repayBorrow(amount);
+        borrow = await socialImpactBorrower.borrowBalanceView();
+        parseFloat(borrow).should.above(parseFloat(fee));
+    })
+
 })
