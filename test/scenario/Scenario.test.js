@@ -270,8 +270,8 @@ describe("Scenario Test", async () => {
         vouchAmount.toString().should.eq(amount.toString())
     })
 
-    it("cancelVouch() - Vouching for NPO-member is cannceled", async () => {
-        await socialImpactVoucher.cancelVouch(SOCIAL_IMPACT_VOUCHER, NPO_USER_1);
+    it("cancelVouch() - A supporter member cancel to vouch for a NPO member", async () => {
+        await socialImpactVoucher.connect(supporterUser1).cancelVouch(SOCIAL_IMPACT_VOUCHER, NPO_USER_1);
         vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq("0")
     })

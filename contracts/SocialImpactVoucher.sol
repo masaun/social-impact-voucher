@@ -68,7 +68,7 @@ contract SocialImpactVoucher is AccessControl, UnionVoucher, UnionBorrower {
     }
 
     //@dev - Stop vouch for other member
-    function cancelVouch(address staker, address borrower) public {
+    function cancelVouch(address staker, address borrower) public onlyRole(SUPPORTER_MEMBER_ROLE) {
         _cancelVouch(staker, borrower);
     }
 
