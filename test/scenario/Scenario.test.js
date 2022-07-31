@@ -145,13 +145,13 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the SocialImpactVoucher.sol
         const vouchAmount = parseEther("10000")
         const SocialImpactVoucher = await ethers.getContractFactory("SocialImpactVoucher")
-        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_USER_1, vouchAmount, NPO_NFT_FACTORY)
+        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, SUPPORTER_USER_1, vouchAmount, NPO_NFT_FACTORY)
         SOCIAL_IMPACT_VOUCHER = socialImpactVoucher.address
         console.log(`Deployed-address of the SocialImpactVoucher contract: ${ SOCIAL_IMPACT_VOUCHER }`)
 
         //@dev - Deploy the SocialImpactBorrower.sol
         const SocialImpactBorrower = await ethers.getContractFactory("SocialImpactBorrower")
-        socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, SUPPORTER_USER_1, NPO_NFT_FACTORY)
+        socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_USER_1, NPO_NFT_FACTORY)
         SOCIAL_IMPACT_BORROWER = socialImpactBorrower.address
         console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
@@ -282,9 +282,10 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq("0")
         
         // Mint uDAI (based on uToken)
-        await dai.approve(SOCIAL_IMPACT_BORROWER, amount)
+        await dai.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, amount)
         await socialImpactBorrower.connect(npoUser1).mint(amount)
-        balance = await uToken.balanceOf(socialImpactBorrower.address)
+
+        balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
         balance.toString().should.eq(amount.toString())
     })
 
