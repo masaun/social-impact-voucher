@@ -15,8 +15,8 @@ describe("Scenario Test", async () => {
     //@dev - Smart contract addresses
     let NPO_NFT
     let NPO_NFT_FACTORY
-    let SOCIAL_IMPACT_VOUCHER
-    let SOCIAL_IMPACT_BORROWER  // 
+    let SOCIAL_IMPACT_VOUCHER   // SocialImpactVoucher.sol
+    let SOCIAL_IMPACT_BORROWER  // SocialImpactBorrower.sol
     let MEMBER_REGISTRY         // MemberRegistry.sol
     let MARKET_REGISTRY         // MarketRegistry.sol
     let UNION_TOKEN             // UnionToken.sol
@@ -174,7 +174,7 @@ describe("Scenario Test", async () => {
     it("updateTrust() - Vouch for NPO members", async () => {
         //@dev - Vouch for NPO members (NPO member's addresses) 
         const amount = parseEther("1000")
-        await userManager.connect(stakerA).updateTrust(socialImpactBorrower.address, amount)
+        await userManager.connect(stakerA).updateTrust(SOCIAL_IMPACT_BORROWER, amount)
     })
 
     it("Setup new member fee in UnionToken", async () => {
@@ -184,6 +184,7 @@ describe("Scenario Test", async () => {
         //@dev - Transfer some amount (== fee * 2) of UnionTokens for that each accounts can pay member fee when they register as a member
         await unionToken.connect(unionSigner).transfer(OWNER, fee.mul(2))
         await unionToken.connect(unionSigner).transfer(NPO_USER_1, fee.mul(2))
+        await unionToken.connect(unionSigner).transfer(SUPPORTER_USER_1, fee.mul(2))
         await unionToken.connect(unionSigner).transfer(USER, fee.mul(2))
     })
 
@@ -192,12 +193,10 @@ describe("Scenario Test", async () => {
         isMember.should.eq(false)
 
         //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
-        await unionToken.approve(SOCIAL_IMPACT_BORROWER, fee)
-        //await unionToken.approve(SOCIAL_IMPACT_BORROWER, fee)
+        await unionToken.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, fee)
 
         //@dev - Registrer a user as a NPO member
-        let tx = await socialImpactBorrower.registerMemberAsNPO()
-        //let tx = await socialImpactBorrower.connect(npoUser1).registerMemberAsNPO()
+        let tx = await socialImpactBorrower.connect(npoUser1).registerMemberAsNPO()
         let txReceipt = await tx.wait()
 
         isMember = await socialImpactBorrower.isMember()
@@ -209,11 +208,10 @@ describe("Scenario Test", async () => {
         isMember.should.eq(false)
 
         //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
-        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee);
+        await unionToken.connect(supporterUser1).approve(SOCIAL_IMPACT_VOUCHER, fee);
 
         //@dev - Registrer a user as a Supporter member
-        let tx = await socialImpactVoucher.registerMemberAsSupporter()
-        //let tx = await socialImpactVoucher.connect(supporterUser1).registerMemberAsSupporter()
+        let tx = await socialImpactVoucher.connect(supporterUser1).registerMemberAsSupporter()
         let txReceipt = await tx.wait()
 
         isMember = await socialImpactVoucher.isMember()
