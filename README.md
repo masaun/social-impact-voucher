@@ -19,7 +19,7 @@ yarn compile
 
 <br>
 
-## Test
+## Test (Mainnet-forking test)
 - Scenario Test
 ```
 yarn test-scenario:SocialImpactVoucher
