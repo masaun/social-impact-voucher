@@ -116,10 +116,16 @@ describe("Scenario Test", async () => {
         await userManager.connect(signer).addMember(STAKER_A)
         await userManager.connect(signer).addMember(STAKER_B)
         await userManager.connect(signer).addMember(STAKER_C)
+
+        //@dev - 1000 DAI is transferred into each wallet addresses specified
         await dai.connect(daiSigner).transfer(STAKER_A, amount)
         await dai.connect(daiSigner).transfer(STAKER_B, amount)
         await dai.connect(daiSigner).transfer(STAKER_C, amount)
         await dai.connect(daiSigner).transfer(OWNER, amount)
+        await dai.connect(daiSigner).transfer(NPO_USER_1, amount)
+        await dai.connect(daiSigner).transfer(SUPPORTER_USER_1, amount)
+
+        //@dev - Each stakers stake 1000 DAI into the Union Protocol
         await dai.connect(stakerA).approve(USER_MANAGER, amount)
         await dai.connect(stakerB).approve(USER_MANAGER, amount)
         await dai.connect(stakerC).approve(USER_MANAGER, amount)
