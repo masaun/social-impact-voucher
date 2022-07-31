@@ -252,14 +252,18 @@ describe("Scenario Test", async () => {
 
     it("vouchForNpoNFTHolder() - A supporter member vouch for a NPO member (NOTE: Only a NPO that holder a NPO-NFT should be able to vouched)", async () => {
         const amount = parseEther("100");
-        
+
+        //@dev - Check vouched-amount of uDAI before vouchForNpoNFTHolder() is executed
         let vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq("0");
         
         //@dev - Only a NPO that holder a NPO-NFT can be vouched
         await socialImpactVoucher.connect(supporterUser1).vouchForNpoNFTHolder(NPO_USER_1)
+
+        //@dev - Check vouched-amount of uDAI after vouchForNpoNFTHolder() is executed
         vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq(amount.toString())
+        //console.log(`vouchAmount (after): ${ vouchAmount }`)
     })
 
     it("cancelVouch() - A supporter member cancel to vouch for a NPO member", async () => {
