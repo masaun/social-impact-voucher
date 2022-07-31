@@ -77,12 +77,6 @@ describe("Scenario Test", async () => {
         NPO_NFT_FACTORY = npoNFTFactory.address
         console.log(`Deployed-address of the NpoNFTFactory contract: ${ NPO_NFT_FACTORY }`)
 
-        //@dev - Deploy the MemberRegistry.sol
-        const MemberRegistry = await ethers.getContractFactory("MemberRegistry")
-        memberRegistry = await MemberRegistry.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_NFT_FACTORY)
-        MEMBER_REGISTRY = memberRegistry.address
-        console.log(`Deployed-address of the MemberRegistry contract: ${ MEMBER_REGISTRY }`)
-
         const admin = "0xd83b4686e434b402c2ce92f4794536962b2be3e8"       //address has usermanager auth
         const daiWallet = "0x6262998Ced04146fA42253a5C0AF90CA02dfd2A3"   //account has dai
         const unionWallet = "0xfc32e7c7c55391ebb4f91187c91418bf96860ca9" //account has unionToken
@@ -194,7 +188,7 @@ describe("Scenario Test", async () => {
     })
 
     it("registerMemberAsNPO() - A user register register a user as a NPO member", async () => {
-        let isMember = await memberRegistry.isMember()
+        let isMember = await socialImpactBorrower.isMember()
         isMember.should.eq(false)
 
         //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
@@ -211,7 +205,7 @@ describe("Scenario Test", async () => {
     })
 
     it("registerMemberAsSupporter() - A user register as a Supporter member", async () => {
-        let isMember = await memberRegistry.isMember()
+        isMember = await socialImpactVoucher.isMember()
         isMember.should.eq(false)
 
         //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
@@ -222,7 +216,7 @@ describe("Scenario Test", async () => {
         //let tx = await socialImpactVoucher.connect(supporterUser1).registerMemberAsSupporter()
         let txReceipt = await tx.wait()
 
-        isMember = await socialImpactVoucher.isMember()        
+        isMember = await socialImpactVoucher.isMember()
         isMember.should.eq(true)
     })
 
