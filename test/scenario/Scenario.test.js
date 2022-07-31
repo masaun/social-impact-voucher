@@ -258,15 +258,14 @@ describe("Scenario Test", async () => {
         balanceAfter.toNumber().should.above(balanceBefore.toNumber())
     })
 
-    it("vouchForNpoNFTHolder() - Only a NPO that holder a NPO-NFT should be able to vouched", async () => {
+    it("vouchForNpoNFTHolder() - A supporter member vouch for a NPO member (NOTE: Only a NPO that holder a NPO-NFT should be able to vouched)", async () => {
         const amount = parseEther("100");
         
         let vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq("0");
         
         //@dev - Only a NPO that holder a NPO-NFT can be vouched
-        await socialImpactVoucher.vouchForNpoNFTHolder(NPO_USER_1)
-        //await socialImpactVoucher.updateTrust(NPO_USER_1, amount)
+        await socialImpactVoucher.connect(supporterUser1).vouchForNpoNFTHolder(NPO_USER_1)
         vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq(amount.toString())
     })
