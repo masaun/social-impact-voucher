@@ -10,6 +10,18 @@
 
 <br>
 
+## Workflow
+- NOTE:
+  - Once a NPO user register as a NPO member, they receive a `NPO NFT` as a proof of NPO member.
+    - Only `NPO NFT` holder can receive vouched-amount in uDAI (uToken).
+
+<br>
+
+- Diagram of workflow
+  ![workflow_social-impact-voucher](https://user-images.githubusercontent.com/19357502/182022530-bd383c6d-2e0c-45ca-acb1-3f9ad3f63fcf.jpeg)
+
+<br>
+
 ## Installation
 - 1. Install modules
 ```
