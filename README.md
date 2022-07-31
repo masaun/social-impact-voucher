@@ -28,7 +28,7 @@ yarn test-scenario:SocialImpactVoucher
 <br>
 
 ## Demo
-- Demo video of scenario test:
+- Demo video of scenario test: https://youtu.be/-t6G3bHOHRM
 
 
 <br>
