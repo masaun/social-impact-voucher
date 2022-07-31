@@ -8,6 +8,7 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /**
  * @title - Social Impact Voucher Factory contract
+ * @dev - This smart contract is in progress to build
  */
 contract SocialImpactVoucherFactory {
     
