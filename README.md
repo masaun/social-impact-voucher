@@ -1,10 +1,10 @@
 # Social Impact Voucher (built on Union Finance)
 ## Overview
-- This is the smart contract for realizing `social impact voucher` that supporter members (of NPOs) can vouch for NPO members and NPO members can borrow vouched-amount of assets from their credit line.
+- This is the smart contract for realizing `social impact voucher` that supporter members (who trust NPOs) can vouch for NPO members and NPO members can borrow vouched-amount of assets from their credit line.
   - Social Impact Voucher smart contract is built on Union Finance: https://docs.union.finance/protocol-overview/plain-english-overview
   - Social Impact Voucher smart contract bring alternative way of fundraising to NPOs (Non Profit Orginaizations).
     - This is not the way of using bond like SIB (Social Impact Bond) but the way of using voucher based on off-chain trust as SIV (Social Impact Voucher).
-    - Once supporter members (of NPOs) vouch for NPO members, NPO members can borrow vouched-amount of assets from their credit line.
+    - Once supporter members (who trust NPOs) vouch for NPO members, NPO members can borrow vouched-amount of assets from their credit line.
   - A use case of `"Many -> 1"` in use cases of Union Finance is used in this smart contract:
     https://docs.union.finance/protocol-overview/master
 
