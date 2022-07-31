@@ -13,6 +13,7 @@ import { BaseUnionMember } from "./union-v1-sdk/BaseUnionMember.sol";
 import { NpoNFT } from "./mock/NpoNFT.sol";
 import { NpoNFTFactory } from "./mock/NpoNFTFactory.sol";
 
+
 /**
  * @title - The Social Impact Borrower contract
  * @notice - A NPO member can borrow from credit line based on vouched-amount

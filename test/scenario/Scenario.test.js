@@ -116,10 +116,16 @@ describe("Scenario Test", async () => {
         await userManager.connect(signer).addMember(STAKER_A)
         await userManager.connect(signer).addMember(STAKER_B)
         await userManager.connect(signer).addMember(STAKER_C)
+
+        //@dev - 1000 DAI is transferred into each wallet addresses specified
         await dai.connect(daiSigner).transfer(STAKER_A, amount)
         await dai.connect(daiSigner).transfer(STAKER_B, amount)
         await dai.connect(daiSigner).transfer(STAKER_C, amount)
         await dai.connect(daiSigner).transfer(OWNER, amount)
+        await dai.connect(daiSigner).transfer(NPO_USER_1, amount)
+        await dai.connect(daiSigner).transfer(SUPPORTER_USER_1, amount)
+
+        //@dev - Each stakers stake 1000 DAI into the Union Protocol
         await dai.connect(stakerA).approve(USER_MANAGER, amount)
         await dai.connect(stakerB).approve(USER_MANAGER, amount)
         await dai.connect(stakerC).approve(USER_MANAGER, amount)
@@ -145,13 +151,13 @@ describe("Scenario Test", async () => {
         //@dev - Deploy the SocialImpactVoucher.sol
         const vouchAmount = parseEther("10000")
         const SocialImpactVoucher = await ethers.getContractFactory("SocialImpactVoucher")
-        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_USER_1, vouchAmount, NPO_NFT_FACTORY)
+        socialImpactVoucher = await SocialImpactVoucher.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, SUPPORTER_USER_1, vouchAmount, NPO_NFT_FACTORY)
         SOCIAL_IMPACT_VOUCHER = socialImpactVoucher.address
         console.log(`Deployed-address of the SocialImpactVoucher contract: ${ SOCIAL_IMPACT_VOUCHER }`)
 
         //@dev - Deploy the SocialImpactBorrower.sol
         const SocialImpactBorrower = await ethers.getContractFactory("SocialImpactBorrower")
-        socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, SUPPORTER_USER_1, NPO_NFT_FACTORY)
+        socialImpactBorrower = await SocialImpactBorrower.deploy(MARKET_REGISTRY, UNION_TOKEN, UNDERLYING_TOKEN, NPO_USER_1, NPO_NFT_FACTORY)
         SOCIAL_IMPACT_BORROWER = socialImpactBorrower.address
         console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
@@ -228,6 +234,74 @@ describe("Scenario Test", async () => {
 
         isMember = await socialImpactVoucher.isMember()        
         isMember.should.eq(true)
+    })
+
+    it("stake 100 DAI and unstake 100 DAI", async () => {
+        const amount = parseEther("100")
+
+        let stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq("0")
+
+        await dai.approve(socialImpactVoucher.address, amount)
+        await socialImpactVoucher.stake(amount)
+        stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq(amount.toString())
+
+        await socialImpactVoucher.unstake(amount)
+        stakeBalance = await socialImpactVoucher.getStakerBalance()
+        stakeBalance.toString().should.eq("0")
+
+        await dai.approve(socialImpactVoucher.address, amount)
+        await socialImpactVoucher.stake(amount)
+    })
+
+    it("withdraw rewards in UnionToken", async () => {
+        const balanceBefore = await unionToken.balanceOf(OWNER)
+        await socialImpactVoucher.withdrawRewards()
+        const balanceAfter = await unionToken.balanceOf(OWNER)
+        balanceAfter.toNumber().should.above(balanceBefore.toNumber())
+    })
+
+    it("vouchForNpoNFTHolder() - Only a NPO that holder a NPO-NFT should be able to vouched", async () => {
+        const amount = parseEther("100");
+        
+        let vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq("0");
+        
+        //@dev - Only a NPO that holder a NPO-NFT can be vouched
+        await socialImpactVoucher.vouchForNpoNFTHolder(NPO_USER_1)
+        //await socialImpactVoucher.updateTrust(NPO_USER_1, amount)
+        vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq(amount.toString())
+    })
+
+    it("cancelVouch()", async () => {
+        await socialImpactVoucher.cancelVouch(SOCIAL_IMPACT_VOUCHER, NPO_USER_1);
+        vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
+        vouchAmount.toString().should.eq("0")
+    })
+
+    it("mint 100 uDAI", async () => {
+        const amount = parseEther("100")
+
+        let balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
+        balance.toString().should.eq("0")
+        
+        // Mint uDAI (based on uToken)
+        await dai.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, amount)
+        await socialImpactBorrower.connect(npoUser1).mint(amount)
+
+        balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
+        balance.toString().should.eq(amount.toString())
+    })
+
+    it("redeem 100 uDAI with 100 DAI", async () => {
+        const amount = parseEther("100")
+
+        // Redeem uDAI with DAI
+        await socialImpactBorrower.connect(npoUser1).redeem(amount)
+        balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
+        balance.toString().should.eq("0")
     })
 
 })
