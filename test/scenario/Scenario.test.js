@@ -276,7 +276,7 @@ describe("Scenario Test", async () => {
         vouchAmount.toString().should.eq("0")
     })
 
-    it("mint() - mint 100 uDAI", async () => {
+    it("mint() - Mint 100 uDAI", async () => {
         const amount = parseEther("100")
 
         let balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
@@ -290,25 +290,44 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq(amount.toString())
     })
 
-    it("redeem() - Redeem 100 uDAI with 100 DAI", async () => {
+    it("redeem() - A NPO member redeem 100 uDAI with 100 DAI from their credit line based on vouched-amount", async () => {
+        //@dev - Check each balance of a NPO member before executing redeem() method
+        const uTokenBalanceBefore = await uToken.balanceOf(NPO_USER_1)
+        const daiBalanceBefore = await dai.balanceOf(NPO_USER_1)
+        //console.log(`uDAI (uToken) balance of NPO member (before): ${ fromWei(uTokenBalanceBefore) } uDAI`)
+        //console.log(`DAI balance of NPO member (before): ${ fromWei(daiBalanceBefore) } DAI`)
+
         const amount = parseEther("100")
 
-        // Redeem uDAI with DAI
+        //@dev - Redeem uDAI with DAI
         await socialImpactBorrower.connect(npoUser1).redeem(amount)
         balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
         balance.toString().should.eq("0")
+
+        //@dev - Check each balance of a NPO member after executing redeem() method
+        const uTokenBalanceAfter = await uToken.balanceOf(NPO_USER_1)
+        const daiBalanceAfter = await dai.balanceOf(NPO_USER_1)
+
+        //@dev - Check difference of each balance of a NPO member before/after executing redeem() method
+        const diffUToken = uTokenBalanceAfter - uTokenBalanceBefore
+        const diffDAI = daiBalanceAfter - daiBalanceBefore
+        fromWei(diffUToken).toString().should.eq("0.0")
+        fromWei(diffDAI).toString().should.eq("100.0")
+        //console.log(`uDAI (uToken) balance of NPO member: ${ fromWei(uTokenBalanceAfter) } uDAI`)
+        //console.log(`DAI balance of NPO member: ${ fromWei(daiBalanceAfter) } DAI`)
     })
 
-    it("repayBorrow() - Borrow 100 DAI + Repay principal (100 DAI)", async () => {
+    it("borrow() - A NPO member borrow 100 DAI / repayBorrow() - the NPO member repay principal (100 DAI)", async () => {
         const amount = parseEther("100")
+
+        //@dev - Borrow 100 DAI
         await socialImpactBorrower.connect(npoUser1).borrow(amount);
         const fee = await uToken.calculatingFee(amount);
         let borrow = await socialImpactBorrower.borrowBalanceView();
         parseFloat(borrow).should.eq(parseFloat(amount.add(fee)));
-
-        await dai.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, ethers.constants.MaxUint256)
         
         //@dev - Repay principal
+        await dai.connect(npoUser1).approve(SOCIAL_IMPACT_BORROWER, ethers.constants.MaxUint256)
         await socialImpactBorrower.connect(npoUser1).repayBorrow(amount);
         borrow = await socialImpactBorrower.borrowBalanceView();
         parseFloat(borrow).should.above(parseFloat(fee));
