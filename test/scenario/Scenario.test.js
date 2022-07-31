@@ -163,7 +163,7 @@ describe("Scenario Test", async () => {
         console.log(`Deployed-address of the SocialImpactBorrower contract: ${ SOCIAL_IMPACT_BORROWER }`)
     })
 
-    it("updateTrust() - voucher/borrower contracts are trusted by each stakers", async () => {
+    it("updateTrust() - SocialImpactVoucher/SocialImpactBorrower contracts are trusted by each stakers", async () => {
         const amount = parseEther("1000")
         
         //@dev - Trust the Voucher contract
@@ -276,7 +276,7 @@ describe("Scenario Test", async () => {
         vouchAmount.toString().should.eq("0")
     })
 
-    it("mint() - Mint 100 uDAI", async () => {
+    it("mint() - 100 uDAI in minted to a NPO member", async () => {
         const amount = parseEther("100")
 
         let balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
@@ -290,7 +290,7 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq(amount.toString())
     })
 
-    it("redeem() - A NPO member redeem 100 uDAI with 100 DAI from their credit line based on vouched-amount", async () => {
+    it("redeem() - A NPO member redeems 100 uDAI (uTokens) in exchange for 100 DAI (underlying asset)", async () => {
         //@dev - Check each balance of a NPO member before executing redeem() method
         const uTokenBalanceBefore = await uToken.balanceOf(NPO_USER_1)
         const daiBalanceBefore = await dai.balanceOf(NPO_USER_1)
@@ -317,7 +317,7 @@ describe("Scenario Test", async () => {
         //console.log(`DAI balance of NPO member: ${ fromWei(daiBalanceAfter) } DAI`)
     })
 
-    it("borrow() - A NPO member borrow 100 DAI / repayBorrow() - the NPO member repay principal (100 DAI)", async () => {
+    it("borrow() - A NPO member borrow 100 DAI from their credit line based on vouched-amount => repayBorrow() - the NPO member repay principal (100 DAI)", async () => {
         const amount = parseEther("100")
 
         //@dev - Borrow 100 DAI
