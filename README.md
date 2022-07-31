@@ -1,6 +1,12 @@
 # Social Impact Voucher (built on Union Finance)
 ## Overview
-- This is the smart contract that ...
+- This is the smart contract for realizing `social impact voucher` that supporter members (who trust NPOs) can vouch for NPO members and NPO members can borrow vouched-amount of assets from their credit line.
+  - Social Impact Voucher smart contract is built on Union Finance: https://docs.union.finance/protocol-overview/plain-english-overview
+  - Social Impact Voucher smart contract bring alternative way of fundraising to NPOs (Non Profit Orginaizations).
+    - This is not the way of using bond like SIB (Social Impact Bond) but the way of using voucher based on off-chain trust as SIV (Social Impact Voucher).
+    - Once supporter members (who trust NPOs) vouch for NPO members, NPO members can borrow vouched-amount of assets from their credit line.
+  - A use case of `"Many -> 1"` in use cases of Union Finance is used in this smart contract:
+    https://docs.union.finance/protocol-overview/master
 
 <br>
 
@@ -28,7 +34,7 @@ yarn test-scenario:SocialImpactVoucher
 <br>
 
 ## Demo
-- Demo video of scenario test:
+- Demo video of scenario test: https://youtu.be/-t6G3bHOHRM
 
 
 <br>
@@ -39,23 +45,25 @@ yarn test-scenario:SocialImpactVoucher
     - Union Protocol V1 SDK：https://github.com/unioncredit/union-v1-sdk
     - Deployed-addresses：https://docs.union.finance/developers/overview
 
-  - Voucher Example
-    https://docs.union.finance/developers/union-sdk
+  - Docs:
+    - Union Contracts Overview  
+      https://docs.union.finance/developers/union-contracts-overview
 
-  - Discord：https://discord.com/channels/983106014637355089/998970729947222096/999003941608095854
+    - Voucher Example  
+      https://docs.union.finance/developers/union-sdk
 
-  - Key Protocol activities
-https://docs.union.finance/protocol-overview/plain-english-overview
+    - Key Protocol activities  
+      https://docs.union.finance/protocol-overview/plain-english-overview
 
-  - Use cases
-https://docs.union.finance/protocol-overview/plain-english-overview
+    - Use cases  
+      https://docs.union.finance/protocol-overview/plain-english-overview
 
-  - What does Union do that wasn’t previously possible?
-https://docs.union.finance/protocol-overview/master
+    - What does Union do that wasn’t previously possible?  
+      https://docs.union.finance/protocol-overview/master
 
-  - Union Finance 🛠 Masters of Credit:Building Smart Contracts that can Borrow and Lend without Collateral
-https://youtu.be/h5Eynrw9EC4
-  ( https://github.com/masaun/DApps_Truffle_Ethereum_Projects/issues/605#issuecomment-1178891273 )
+  - Workshop
+    - Union Finance 🛠 Masters of Credit:Building Smart Contracts that can Borrow and Lend without Collateral  
+      https://youtu.be/h5Eynrw9EC4
 
 <br>
 

@@ -10,17 +10,17 @@ require("chai").should()
 describe("Scenario Test", async () => {
 
     //@dev - Smart contract instances
-    let npoNFTFactory, userManager, dai, unionToken, uToken;
+    let npoNFT, npoNFTFactory, socialImpactVoucher, socialImpactBorrower, userManager, dai, unionToken, uToken;
 
     //@dev - Smart contract addresses
     let NPO_NFT
     let NPO_NFT_FACTORY
     let SOCIAL_IMPACT_VOUCHER
-    let SOCIAL_IMPACT_BORROWER
-    let MEMBER_REGISTRY    // MemberRegistry.sol
-    let MARKET_REGISTRY    // MarketRegistry.sol
-    let UNION_TOKEN        // UnionToken.sol
-    let UNDERLYING_TOKEN   // Underlying Token 
+    let SOCIAL_IMPACT_BORROWER  // 
+    let MEMBER_REGISTRY         // MemberRegistry.sol
+    let MARKET_REGISTRY         // MarketRegistry.sol
+    let UNION_TOKEN             // UnionToken.sol
+    let UNDERLYING_TOKEN        // Underlying Token (DAI)
 
     //@dev - wallet addresses
     let OWNER, STAKER_A, STAKER_B, STAKER_C, USER, NPO_USER_1
@@ -205,7 +205,7 @@ describe("Scenario Test", async () => {
     })
 
     it("registerMemberAsSupporter() - A user register as a Supporter member", async () => {
-        isMember = await socialImpactVoucher.isMember()
+        let isMember = await socialImpactVoucher.isMember()
         isMember.should.eq(false)
 
         //@dev - Approve the SocialImpactVoucher.sol to spend UnionToken as a member fee
