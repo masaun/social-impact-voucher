@@ -191,8 +191,8 @@ describe("Scenario Test", async () => {
         await unionToken.connect(unionSigner).transfer(NPO_USER_1, fee.mul(2))
         await unionToken.connect(unionSigner).transfer(USER, fee.mul(2))
 
-        await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
-        await unionToken.connect(owner).approve(SOCIAL_IMPACT_BORROWER, fee)
+        // await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
+        // await unionToken.connect(owner).approve(SOCIAL_IMPACT_BORROWER, fee)
 
         //@dev - Approve the MemberRegistry.sol to spend UnionToken as a member fee
         //await unionToken.connect(owner).approve(MEMBER_REGISTRY, fee)
@@ -201,7 +201,7 @@ describe("Scenario Test", async () => {
         //await unionToken.connect(owner).approve(SOCIAL_IMPACT_VOUCHER, fee)
     })
 
-    it("Register a user as a NPO member", async () => {
+    it("registerMemberAsNPO() - Register a user as a NPO member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
@@ -218,7 +218,7 @@ describe("Scenario Test", async () => {
         isMember.should.eq(true)
     })
 
-    it("Register a user as a Supporter member", async () => {
+    it("registerMemberAsSupporter() - Register a user as a Supporter member", async () => {
         let isMember = await memberRegistry.isMember()
         isMember.should.eq(false)
 
@@ -236,7 +236,7 @@ describe("Scenario Test", async () => {
         isMember.should.eq(true)
     })
 
-    it("stake 100 DAI and unstake 100 DAI", async () => {
+    it("stake() - stake 100 DAI", async () => {
         const amount = parseEther("100")
 
         let stakeBalance = await socialImpactVoucher.getStakerBalance()
@@ -246,6 +246,10 @@ describe("Scenario Test", async () => {
         await socialImpactVoucher.stake(amount)
         stakeBalance = await socialImpactVoucher.getStakerBalance()
         stakeBalance.toString().should.eq(amount.toString())
+    })
+
+    it("unstake() - unstake 100 DAI", async () => {
+        const amount = parseEther("100")
 
         await socialImpactVoucher.unstake(amount)
         stakeBalance = await socialImpactVoucher.getStakerBalance()
@@ -255,7 +259,7 @@ describe("Scenario Test", async () => {
         await socialImpactVoucher.stake(amount)
     })
 
-    it("withdraw rewards in UnionToken", async () => {
+    it("withdrawRewards() - Withdraw rewards in UnionToken", async () => {
         const balanceBefore = await unionToken.balanceOf(OWNER)
         await socialImpactVoucher.withdrawRewards()
         const balanceAfter = await unionToken.balanceOf(OWNER)
@@ -275,13 +279,13 @@ describe("Scenario Test", async () => {
         vouchAmount.toString().should.eq(amount.toString())
     })
 
-    it("cancelVouch()", async () => {
+    it("cancelVouch() - Vouching for NPO-member is cannceled", async () => {
         await socialImpactVoucher.cancelVouch(SOCIAL_IMPACT_VOUCHER, NPO_USER_1);
         vouchAmount = await userManager.getVouchingAmount(SOCIAL_IMPACT_VOUCHER, NPO_USER_1)
         vouchAmount.toString().should.eq("0")
     })
 
-    it("mint 100 uDAI", async () => {
+    it("mint() - mint 100 uDAI", async () => {
         const amount = parseEther("100")
 
         let balance = await uToken.balanceOf(SOCIAL_IMPACT_BORROWER)
@@ -295,7 +299,7 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq(amount.toString())
     })
 
-    it("redeem 100 uDAI with 100 DAI", async () => {
+    it("redeem() - Redeem 100 uDAI with 100 DAI", async () => {
         const amount = parseEther("100")
 
         // Redeem uDAI with DAI
@@ -304,7 +308,7 @@ describe("Scenario Test", async () => {
         balance.toString().should.eq("0")
     })
 
-    it("Borrow 100 DAI + Repay principal (100 DAI)", async () => {
+    it("repayBorrow() - Borrow 100 DAI + Repay principal (100 DAI)", async () => {
         const amount = parseEther("100")
         await socialImpactBorrower.connect(npoUser1).borrow(amount);
         const fee = await uToken.calculatingFee(amount);
